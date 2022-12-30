@@ -1,3 +1,13 @@
 Builds/Half-Life
 Builds/HLStandardSDK
 dlls/mp.ncb
+dlls/.vs
+cl_dlls/.vs
+*.obj
+*.map
+*.pch
+*.idb
+*.plg
+*.exp
+*.lib
+*.sbr

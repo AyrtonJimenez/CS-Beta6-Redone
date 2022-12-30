@@ -12,18 +12,18 @@
 
 
 
-enum m4a1_e {
-
-draw,
-shoot,
-burst_shoot,
-reload,
-idle1
-
+enum ak47_e 
+{
+	idle1,
+	reload,
+	draw,
+	shoot1,
+	shoot2,
+	shoot3,
 };
 
 
-class CM4A1: public CBasePlayerWeapon
+class CAK47: public CBasePlayerWeapon
 {
 	public:
 		void Spawn (void);
@@ -32,72 +32,67 @@ class CM4A1: public CBasePlayerWeapon
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer( CBasePlayer *pPlayer );
 		void Reload(void);
-
 		void PrimaryAttack( void );
 		void SecondaryAttack(void);
 
 		BOOL Deploy( void );
 		void Holster( void );
 		void WeaponIdle( void );
-
-
-		int m_fInZoom;
-
 };
 
 
-LINK_ENTITY_TO_CLASS (weapon_m4a1, CM4A1);
+LINK_ENTITY_TO_CLASS (weapon_ak47, CAK47);
 
 
 
-void CM4A1::Spawn() 
+void CAK47::Spawn() 
 {
 	Precache( ); //call precache
-	m_iId = WEAPON_M4A1; //this will be the name defined in weapons.h
-	SET_MODEL(ENT(pev), "models/w_m4a1.mdl"); //fill in your weapons model
-	m_iClip = M4A1_DEFAULT_GIVE; 
+	m_iId = WEAPON_AK47; //this will be the name defined in weapons.h
+	SET_MODEL(ENT(pev), "models/w_ak47.mdl"); //fill in your weapons model
+	m_iClip = AK47_DEFAULT_GIVE; 
 
 	FallInit();
 }
 
 
-void CM4A1::Precache(void)
+void CAK47::Precache(void)
 {
-	PRECACHE_MODEL("models/w_m4a1.mdl");
-	PRECACHE_MODEL("models/v_m4a1_r.mdl");
-	PRECACHE_MODEL("models/p_m4a1.mdl");
+	PRECACHE_MODEL("models/w_ak47.mdl");
+	PRECACHE_MODEL("models/v_ak47_r.mdl");
+	PRECACHE_MODEL("models/p_ak47.mdl");
 
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("sound/weapons/m4a1-1.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1-2.wav");
+	PRECACHE_SOUND("sound/weapons/ak47-1.wav");
+	PRECACHE_SOUND("sound/weapons/ak47-2.wav");
 	PRECACHE_SOUND("sound/dryfire_rifle.wav");
 	PRECACHE_SOUND("sound/weapons/ammo_pick.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_deploy.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_clipin.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_clipout.wav");
+	PRECACHE_SOUND("sound/weapons/ak47_boltpull.wav");
+	PRECACHE_SOUND("sound/weapons/ak47_clipin.wav");
+	PRECACHE_SOUND("sound/weapons/ak47_clipout.wav");
 
 }
 
-int CM4A1::GetItemInfo(ItemInfo *p)
+int CAK47::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
-	p->pszAmmo1 = "5.56";
-	p->iMaxAmmo1 = M4A1_MAX_CARRY;
+	p->pszAmmo1 = "7.62";
+	p->iMaxAmmo1 = AK47_MAX_CARRY;
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
-	p->iMaxClip = M4A1_MAX_CLIP;
+	p->iMaxClip = AK47_MAX_CLIP;
 	p->iSlot = 0;
 	p->iPosition = 2;
 	p->iFlags = 0;
-	p->iId = m_iId = WEAPON_M4A1;
-	p->iWeight = M4A1_WEIGHT;
+	p->iId = m_iId = WEAPON_AK47;
+	p->iWeight = AK47_WEIGHT;
 	return 1;
 }
 
 
-int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
+int CAK47::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
@@ -110,23 +105,23 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 }
 
 
-BOOL CM4A1::Deploy ()
+BOOL CAK47::Deploy ()
 {
-	return DefaultDeploy( "models/v_m4a1_r.mdl", "models/p_m4a1.mdl", draw, "M4A1");
+	return DefaultDeploy( "models/v_ak47_r.mdl", "models/p_ak47.mdl", draw, "AK47");
 }
 
-void CM4A1::Holster()
+void CAK47::Holster()
 {
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5; //Same for all
 	SendWeaponAnim( idle1);
 }
 
-void CM4A1::WeaponIdle(void)
+void CAK47::WeaponIdle(void)
 {
 	SendWeaponAnim(idle1);
 }
 
-void CM4A1::PrimaryAttack(void)
+void CAK47::PrimaryAttack(void)
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -141,13 +136,13 @@ void CM4A1::PrimaryAttack(void)
 			return;
 		else
 		{
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "sound/weapons/m4a1-1.wav", 0.8, ATTN_NORM);
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "sound/weapons/ak47-1.wav", 0.8, ATTN_NORM);
 		m_flNextPrimaryAttack = gpGlobals->time + 0.1;
 		}
 		return;
 	}
 
-	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
+	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
@@ -160,7 +155,7 @@ void CM4A1::PrimaryAttack(void)
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 	Vector vecSrc = m_pPlayer->GetGunPosition();
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
-	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_556, 0);
+	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_762, 0);
 
 	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.02;
 	if (m_flNextPrimaryAttack < gpGlobals->time)
@@ -172,28 +167,17 @@ void CM4A1::PrimaryAttack(void)
 	m_pPlayer->pev->punchangle.x -= 2;
 }
 
-void CM4A1::SecondaryAttack(void)
+void CAK47::SecondaryAttack(void)
 {
-	if (m_fInZoom)
-	{
-		m_pPlayer->m_iFOV = 0;
-		m_fInZoom = 0;
-	}
-	else 
-	{
-		m_pPlayer->m_iFOV = 45;
-		m_fInZoom = 1;
-	}
-	pev->nextthink = gpGlobals->time + 0.1;
-	m_flNextSecondaryAttack = gpGlobals->time + 0.5;
+
 }
 
-void CM4A1::Reload(void)
+void CAK47::Reload(void)
 {
-	DefaultReload(M4A1_MAX_CLIP, reload, 1.5);
+	DefaultReload(AK47_MAX_CLIP, reload, 1.5);
 }
 
-class CM4A1Ammo: public CBasePlayerAmmo
+class CAK47Ammo: public CBasePlayerAmmo
 {
 	void Spawn (void)
 	{
@@ -209,7 +193,7 @@ class CM4A1Ammo: public CBasePlayerAmmo
 	BOOL AddAmmo(CBaseEntity * pOther)
 
 	{
-		if (pOther->GiveAmmo(AMMO_M4A1_GIVE, "5.56", M4A1_MAX_CARRY)!= -1)
+		if (pOther->GiveAmmo(AMMO_AK47_GIVE, "7.62", AK47_MAX_CARRY)!= -1)
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "sound/ammo_pick.wav", 1, ATTN_NORM);
 			return TRUE;
@@ -218,4 +202,4 @@ class CM4A1Ammo: public CBasePlayerAmmo
 	}
 };
 
-LINK_ENTITY_TO_CLASS(ammo_m4a1, CM4A1Ammo);
+LINK_ENTITY_TO_CLASS(ammo_ak47, CAK47Ammo);
