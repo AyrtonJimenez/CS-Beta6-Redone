@@ -177,6 +177,7 @@ void DecalGunshot( TraceResult *pTrace, int iBulletType )
 		case BULLET_MONSTER_MP5:
 		case BULLET_PLAYER_BUCKSHOT:
 		case BULLET_PLAYER_357:
+		case BULLET_PLAYER_556:
 		default:
 			// smoke and decal
 			UTIL_GunshotDecalTrace( pTrace, DamageDecal( pEntity, DMG_BULLET ) );
@@ -335,7 +336,9 @@ void W_Precache(void)
 	UTIL_PrecacheOther( "ammo_ARgrenades" );
 	UTIL_PrecacheOtherWeapon("weapon_m4a1");
 	UTIL_PrecacheOther("ammo_m4a1");
-
+	UTIL_PrecacheOtherWeapon("weapon_ak47");
+	UTIL_PrecacheOther("ammo_ak47");
+	
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	// python
 	UTIL_PrecacheOtherWeapon( "weapon_357" );
