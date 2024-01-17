@@ -162,7 +162,7 @@ void CM4A1::PrimaryAttack(void)
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_556, 0);
 
-	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.02;
+	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.01;
 	if (m_flNextPrimaryAttack < gpGlobals->time)
 		m_flNextPrimaryAttack = gpGlobals->time + 0.02;
 
@@ -185,7 +185,7 @@ void CM4A1::SecondaryAttack(void)
 		m_fInZoom = 1;
 	}
 	pev->nextthink = gpGlobals->time + 0.1;
-	m_flNextSecondaryAttack = gpGlobals->time + 0.5;
+	m_flNextSecondaryAttack = gpGlobals->time + 0.375;
 }
 
 void CM4A1::Reload(void)
