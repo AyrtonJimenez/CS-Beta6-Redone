@@ -33,6 +33,7 @@
 #define HITGROUP_RIGHTARM	5
 #define HITGROUP_LEFTLEG	6
 #define HITGROUP_RIGHTLEG	7
+#define HITGROUP_SHIELD		8
 
 
 // spawn flags 256 and above are already taken by the engine

@@ -20,10 +20,10 @@
 #ifndef CDLL_DLL_H
 #define CDLL_DLL_H
 
-#define MAX_WEAPONS		32		// ???
+#define MAX_WEAPONS		100		// ???
 
-#define MAX_WEAPON_SLOTS		5	// hud item selection slots
-#define MAX_ITEM_TYPES			6	// hud item selection slots
+#define MAX_WEAPON_SLOTS		9	// hud item selection slots
+#define MAX_ITEM_TYPES			10	// hud item selection slots
 
 #define MAX_ITEMS				5	// hard coded item types
 

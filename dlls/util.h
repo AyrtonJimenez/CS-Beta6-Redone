@@ -86,9 +86,11 @@ typedef int BOOL;
 // This is the glue that hooks .MAP entity class names to our CPP classes
 // The _declspec forces them to be exported by name so we can do a lookup with GetProcAddress()
 // The function is used to intialize / allocate the object for the entity
+/* LINUX COMPILE */
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
-	extern "C" _declspec( dllexport ) void mapClassName( entvars_t *pev ); \
-	void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
+        extern "C" EXPORT void mapClassName( entvars_t *pev ); \
+        void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
+/* END LINUX COMPILE */
 
 
 //

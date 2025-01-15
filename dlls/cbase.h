@@ -51,7 +51,13 @@ CBaseEntity
 
 // C functions for external declarations that call the appropriate C++ methods
 
-#define EXPORT	_declspec( dllexport )
+/* LINUX COMPILE */
+#ifdef _WIN32
+#define EXPORT  _declspec( dllexport )
+#else
+#define EXPORT
+#endif
+/* END LINUX COMPILE */
 
 extern "C" EXPORT int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
 
@@ -235,6 +241,7 @@ public:
 	void EXPORT SUB_CallUseToggle( void ) { this->Use( this, this, USE_TOGGLE, 0 ); }
 	int			ShouldToggle( USE_TYPE useType, BOOL currentState );
 	void		FireBullets( ULONG	cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL  );
+	Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
 
 	virtual CBaseEntity *Respawn( void ) { return NULL; }
 

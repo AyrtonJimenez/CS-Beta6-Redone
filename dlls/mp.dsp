@@ -78,6 +78,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ".\debugmp"
 # PROP Intermediate_Dir ".\debugmp"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\engine" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "VALVE_DLL" /FR /YX /FD /c
@@ -92,14 +93,14 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
 # ADD LINK32 user32.lib advapi32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /def:".\mp.def" /implib:".\Debug\mp.lib"
 # SUBTRACT LINK32 /profile
-# Begin Custom Build - Copying to \half-life\mp\dlls
+# Begin Custom Build - Copying to dlls
 TargetPath=.\debugmp\mp.dll
 TargetName=mp
 InputPath=.\debugmp\mp.dll
 SOURCE="$(InputPath)"
 
 "$(TargetName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetPath) \half-life\mp\dlls
+	copy $(TargetPath) G:\Github\CS-Beta6-Redone\Builds\1016\testmod\dlls
 
 # End Custom Build
 
@@ -159,6 +160,10 @@ BuildCmds= \
 # Begin Source File
 
 SOURCE=.\airtank.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ak47.cpp
 # End Source File
 # Begin Source File
 

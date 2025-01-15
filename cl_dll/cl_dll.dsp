@@ -74,6 +74,7 @@ SOURCE="$(InputPath)"
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ".\Debug"
 # PROP Intermediate_Dir ".\Debug"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /FD /c
@@ -93,7 +94,7 @@ InputPath=.\Debug\client.dll
 SOURCE="$(InputPath)"
 
 "\half-life\mp\cl_dlls\client.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\client.dll \half-life\mp\cl_dlls
+	copy $(TargetDir) G:\Github\CS-Beta6-Redone\Builds\1016\testmod\cl_dlls
 
 # End Custom Build
 

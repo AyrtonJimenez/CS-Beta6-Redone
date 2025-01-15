@@ -275,6 +275,16 @@ public:
 
 	void SetCustomDecalFrames( int nFrames );
 	int GetCustomDecalFrames( void );
+
+	/**
+	 *  Add in Counter-Strike Methods
+	 * 
+	 */
+	int m_iTeam;
+	int m_iMoneyCount;
+	void AddAccount(int moneyToAdd);
+  BOOL m_bInBuy;
+
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

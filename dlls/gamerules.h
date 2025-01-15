@@ -157,6 +157,10 @@ public:
 
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) {}
+
+	// AJ: 01-14-2025
+	virtual void RestartRound(void);
+	int m_iNextRoundTime;
 };
 
 extern CGameRules *InstallGameRules( void );
@@ -354,6 +358,19 @@ protected:
 	float m_flIntermissionEndTime;
 	BOOL m_iEndIntermissionButtonHit;
 	void SendMOTDToClient( edict_t *client );
+
+	void RestartRound(void);
+	int m_iNumCT;
+	int m_iNumTerrorist;
+	int m_flRestartRoundTime;
+	int m_iAccountTerrorist;
+	int m_iAccountCT;
+	int m_iHostagesRescued;
+	int m_iHostagesTouched;
+	int m_iCTWin;
+	int m_flRoundTime ;
+
+
 };
 
 extern DLL_GLOBAL CGameRules*	g_pGameRules;

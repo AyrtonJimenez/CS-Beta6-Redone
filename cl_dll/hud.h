@@ -121,6 +121,15 @@ private:
 
 };
 
+class CHudCrosshair: public CHudBase
+{
+	public:
+		int Init(void);
+		int VidInit(void);
+		void Reset(void);
+		int Draw(float flTime);
+};
+
 //
 //-----------------------------------------------------
 //
@@ -575,6 +584,7 @@ public:
 	CHudAmmoSecondary	m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
+	CHudCrosshair m_Crosshair;
 
 	void Init( void );
 	void VidInit( void );

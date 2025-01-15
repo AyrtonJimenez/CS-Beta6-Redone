@@ -77,6 +77,53 @@ int MaxAmmoCarry( int iszName )
 }
 
 	
+void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+{
+	float flFront, flSide;
+
+	if (m_iShotsFired == 1)
+	{
+		flFront = up_base;
+		flSide = lateral_base;
+	}
+	else
+	{
+		flFront = m_iShotsFired * up_modifier + up_base;
+		flSide = m_iShotsFired * lateral_modifier + lateral_base;
+	}
+
+	m_pPlayer->pev->punchangle.x -= flFront;
+
+	if (m_pPlayer->pev->punchangle.x < -up_max)
+		m_pPlayer->pev->punchangle.x = -up_max;
+
+	if (m_iDirection == 1)
+	{
+		m_pPlayer->pev->punchangle.y += flSide;
+
+		if (m_pPlayer->pev->punchangle.y > lateral_max)
+			m_pPlayer->pev->punchangle.y = lateral_max;
+	}
+	else
+	{
+		m_pPlayer->pev->punchangle.y -= flSide;
+
+		if (m_pPlayer->pev->punchangle.y < -lateral_max)
+			m_pPlayer->pev->punchangle.y = -lateral_max;
+	}
+
+  ALERT(at_console, "Punch X: %3f Punch Y: %3f \n", m_pPlayer->pev->punchangle.x , m_pPlayer->pev->punchangle.y);
+    
+	if (!RANDOM_LONG(0, direction_change))
+		m_iDirection = !m_iDirection;
+}
+
+void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
+{
+
+}
+
+
 /*
 ==============================================================================
 
@@ -177,7 +224,6 @@ void DecalGunshot( TraceResult *pTrace, int iBulletType )
 		case BULLET_MONSTER_MP5:
 		case BULLET_PLAYER_BUCKSHOT:
 		case BULLET_PLAYER_357:
-		case BULLET_PLAYER_556:
 		default:
 			// smoke and decal
 			UTIL_GunshotDecalTrace( pTrace, DamageDecal( pEntity, DMG_BULLET ) );
@@ -334,11 +380,13 @@ void W_Precache(void)
 	UTIL_PrecacheOtherWeapon( "weapon_9mmAR" );
 	UTIL_PrecacheOther( "ammo_9mmAR" );
 	UTIL_PrecacheOther( "ammo_ARgrenades" );
+
+	// new weapons
 	UTIL_PrecacheOtherWeapon("weapon_m4a1");
 	UTIL_PrecacheOther("ammo_m4a1");
 	UTIL_PrecacheOtherWeapon("weapon_ak47");
 	UTIL_PrecacheOther("ammo_ak47");
-	
+
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	// python
 	UTIL_PrecacheOtherWeapon( "weapon_357" );
@@ -463,6 +511,8 @@ void CBasePlayerItem :: SetObjectCollisionBox( void )
 	pev->absmin = pev->origin + Vector(-24, -24, 0);
 	pev->absmax = pev->origin + Vector(24, 24, 16); 
 }
+
+
 
 
 //=========================================================

@@ -134,6 +134,9 @@ void CHalfLifeMultiplay::RefreshSkillData( void )
 
 	// hornet
 	gSkillData.plrDmgHornet = 10;
+
+	gSkillData.plrDmg556 = 23;
+	gSkillData.plrDmg762 = 24;
 }
 
 // longest the intermission can last, in seconds
@@ -158,6 +161,11 @@ void CHalfLifeMultiplay :: Think ( void )
 
 	float flTimeLimit = timelimit.value * 60;
 	float flFragLimit = fraglimit.value;
+
+	if(g_pGameRules->m_iNextRoundTime > gpGlobals->time)
+		return;
+	else
+		g_pGameRules->RoundRestart();
 	
 	if ( flTimeLimit != 0 && gpGlobals->time >= flTimeLimit )
 	{

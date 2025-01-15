@@ -1737,6 +1737,37 @@ void NextLevel( void )
 }
 
 
+class CBuyzone : public CBaseTrigger
+{
+  public:
+    void KeyValue(KeyValueData *pkvd);
+    void Spawn(void);
+    void Precache(void);
+};
+LINK_ENTITY_TO_CLASS(func_buyzone, CBuyzone);
+
+void CBuyzone::KeyValue(KeyValueData *pkvd) {
+  CBaseTrigger::KeyValue(pkvd);
+}
+
+void CBuyzone::Precache(void){
+  pev->solid = SOLID_NOT;
+  pev->skin = CONTENTS_BUYZONE;
+
+  if(CVAR_GET_FLOAT("showtriggers") == 0) {
+    pev->rendermode = kRenderTransTexture;
+    pev->renderamt = 0;
+  }
+  pev->effects &= ~EF_NODRAW;
+}
+
+void CBuyzone::Spawn(void) {
+  Precache();
+
+  SET_MODEL(ENT(pev), STRING(pev->model));
+  pev->movetype = MOVETYPE_PUSH;
+}
+
 // ============================== LADDER =======================================
 
 class CLadder : public CBaseTrigger
@@ -1765,8 +1796,7 @@ void CLadder :: Precache( void )
 	pev->skin = CONTENTS_LADDER;
 	if ( CVAR_GET_FLOAT("showtriggers") == 0 )
 	{
-		pev->rendermode = kRenderTransTexture;
-		pev->renderamt = 0;
+		pev->rendermode = kRenderTransTexture; pev->renderamt = 0;
 	}
 	pev->effects &= ~EF_NODRAW;
 }

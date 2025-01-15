@@ -347,22 +347,30 @@ void CBasePlayer :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 		switch ( ptr->iHitgroup )
 		{
 		case HITGROUP_GENERIC:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit somewhere idk");
 			break;
 		case HITGROUP_HEAD:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the head");
 			flDamage *= gSkillData.plrHead;
 			break;
 		case HITGROUP_CHEST:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Chest");
 			flDamage *= gSkillData.plrChest;
 			break;
 		case HITGROUP_STOMACH:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Stomach");
 			flDamage *= gSkillData.plrStomach;
 			break;
 		case HITGROUP_LEFTARM:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Left Arm");
 		case HITGROUP_RIGHTARM:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Right Arm");
 			flDamage *= gSkillData.plrArm;
 			break;
 		case HITGROUP_LEFTLEG:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Left Leg");
 		case HITGROUP_RIGHTLEG:
+			ClientPrint(pevAttacker, HUD_PRINTCENTER, "Hit in the Right Leg");
 			flDamage *= gSkillData.plrLeg;
 			break;
 		default:
@@ -2235,6 +2243,16 @@ void CBasePlayer::PreThink(void)
 	{
 		pev->velocity = g_vecZero;
 	}
+
+
+
+	if(UTIL_PointContents(pev->origin) == CONTENTS_BUYZONE) {
+		m_bInBuy = true;
+		ALERT(at_console, "The Player is in the buy zone!\n");
+	}
+	else
+		m_bInBuy = false;
+	
 }
 /* Time based Damage works as follows: 
 	1) There are several types of timebased damage:
@@ -3160,6 +3178,8 @@ void CBasePlayer::Spawn( void )
 
 	m_lastx = m_lasty = 0;
 
+	m_iMoneyCount = 800;
+
 	g_pGameRules->PlayerSpawn( this );
 }
 
@@ -3781,6 +3801,9 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "ammo_ARgrenades" );
 		GiveNamedItem( "weapon_handgrenade" );
 		GiveNamedItem( "weapon_tripmine" );
+		GiveNamedItem( "weapon_m4a1" );
+		GiveNamedItem( "weapon_ak47" );
+
 #ifndef OEM_BUILD
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "ammo_357" );
@@ -5088,3 +5111,7 @@ void CInfoIntermission::Think ( void )
 
 LINK_ENTITY_TO_CLASS( info_intermission, CInfoIntermission );
 
+void CBasePlayer::AddAccount(int moneyToAdd)
+{
+	m_iMoneyCount += moneyToAdd;
+}
