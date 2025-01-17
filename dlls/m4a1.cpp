@@ -152,7 +152,7 @@ void CM4A1::PrimaryAttack(void)
 
 	m_iClip--;
 
-	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+	m_pPlayer->SetAnimation(PLAYER_SHOOT_SILENCED_RIFLE);
 
 	if(m_fInZoom)
 	{

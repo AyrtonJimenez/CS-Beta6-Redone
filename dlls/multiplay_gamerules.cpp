@@ -448,6 +448,8 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 
 	if ( addDefault )
 	{
+
+		// AJ TODO: This is where I'd put the code to check the player team and assign them their starting guns
 		pPlayer->GiveNamedItem( "weapon_crowbar" );
 		pPlayer->GiveNamedItem( "weapon_9mmhandgun" );
 		pPlayer->GiveAmmo( 68, "9mm", _9MM_MAX_CARRY );// 4 full reloads
