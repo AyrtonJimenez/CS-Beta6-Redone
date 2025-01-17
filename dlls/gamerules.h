@@ -158,9 +158,6 @@ public:
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) {}
 
-	// AJ: 01-14-2025
-	virtual void RestartRound(void);
-	int m_iNextRoundTime;
 };
 
 extern CGameRules *InstallGameRules( void );
@@ -352,6 +349,8 @@ public:
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) { GoToIntermission(); }
 
+
+	// AJ: 01-14-2025
 protected:
 	virtual void ChangeLevel( void );
 	virtual void GoToIntermission( void );

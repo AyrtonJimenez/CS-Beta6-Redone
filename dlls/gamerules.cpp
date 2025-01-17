@@ -334,24 +334,24 @@ CGameRules *InstallGameRules( void )
 }
 
 // AJ: 01-14-2025
-CGameRules RestartRound(void) 
-{
-	if(m_iNextRoundTime <= 0)
-		return;
+// CGameRules RestartRound(void) 
+// {
+// 	if(m_iNextRoundTime <= 0)
+// 		return;
 
 
-	for (int i = 1;i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer *pPlayer = (CBasePlayer*) UTIL_PlayerByIndex (i);
+// 	for (int i = 1;i <= gpGlobals->maxClients; i++)
+// 	{
+// 		CBasePlayer *pPlayer = (CBasePlayer*) UTIL_PlayerByIndex (i);
 
-		if (pPlayer)
-		{
-			pPlayer->RemoveAllItems( TRUE );
-			respawn (pPlayer->pev,FALSE);
-			m_iNextRoundTime = 0;
+// 		if (pPlayer)
+// 		{
+// 			pPlayer->RemoveAllItems( TRUE );
+// 			respawn (pPlayer->pev,FALSE);
+// 			m_iNextRoundTime = 0;
 
-		}
-	}
-}
+// 		}
+// 	}
+// }
 
 

@@ -1,8 +1,13 @@
 Builds/Half-Life
 Builds/HLStandardSDK
+Builds
 dlls/mp.ncb
 dlls/.vs
+dlls/Debug
+dlls/debugmp
 cl_dlls/.vs
+cl_dlls/Debug
+cl_dlls/debugmp
 *.obj
 *.map
 *.pch
@@ -11,3 +16,4 @@ cl_dlls/.vs
 *.exp
 *.lib
 *.sbr
+*.mak
