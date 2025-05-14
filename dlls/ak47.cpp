@@ -8,7 +8,7 @@
 #include "gamerules.h"
 
 
-enum ak47_e 
+enum AK47_e 
 {
 	idle1,
 	reload,
@@ -24,7 +24,7 @@ class CAK47: public CBasePlayerWeapon
 	public:
 		void Spawn (void);
 		void Precache (void);
-		int iItemSlot(void) { return 2; }
+		int iItemSlot(void) { return WEAPON_PRIMARY; }
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer( CBasePlayer *pPlayer );
 		void Reload(void);
@@ -42,8 +42,10 @@ LINK_ENTITY_TO_CLASS (weapon_ak47, CAK47);
 void CAK47::Spawn() 
 {
 	Precache();
+	m_iId = WEAPON_AK47;
 	SET_MODEL(ENT(pev), "models/w_ak47.mdl");
 	m_iClip = AK47_DEFAULT_GIVE; 
+	m_tGunType = WEAPON_PRIMARY;
 
 	FallInit();
 }
@@ -75,8 +77,8 @@ int CAK47::GetItemInfo(ItemInfo *p)
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = AK47_MAX_CLIP;
-	p->iSlot = 1;
-	p->iPosition = 4;
+	p->iSlot = WEAPON_PRIMARY; //The horizontal one
+	p->iPosition = 1; //The vertical one
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_AK47;
 	p->iWeight = AK47_WEIGHT;
@@ -88,9 +90,17 @@ int CAK47::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
+		if(pPlayer->hasPrimary) {
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "The Player already has a Primary Weapon");
+
+			return FALSE;
+		}
+		pPlayer->hasPrimary = true;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "hasPrimary == True");
 		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
 			WRITE_BYTE( m_iId );
 		MESSAGE_END();
+
 		return TRUE;
 	}
 	return FALSE;
@@ -99,7 +109,7 @@ int CAK47::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CAK47::Deploy ()
 {
-	return DefaultDeploy( "models/v_ak47_r.mdl", "models/p_ak47.mdl", draw, "AK47");
+	return DefaultDeploy("models/v_ak47_r.mdl", "models/p_ak47.mdl", draw, "AK47");
 }
 
 void CAK47::Holster()
@@ -135,7 +145,7 @@ void CAK47::PrimaryAttack(void)
 
 	m_iClip--;
 
-	m_pPlayer->SetAnimation ( PLAYER_ATTACK1);
+	m_pPlayer->SetAnimation ( PLAYER_SHOOT_SILENCED_RIFLE);
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 

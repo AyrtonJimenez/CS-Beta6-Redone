@@ -162,12 +162,29 @@ void CHalfLifeTeamplay :: UpdateGameMode( CBasePlayer *pPlayer )
 	MESSAGE_END();
 }
 
+BOOL CHalfLifeTeamplay::CanHavePlayerItem(CBasePlayer *pPlayer,CBasePlayerItem *pItem)
+{
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
+		return FALSE;
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
+		return FALSE;
+
+return CHalfLifeMultiplay::CanHavePlayerItem(pPlayer,pItem);
+}
+
 
 const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 {
 	// copy out the team name from the model
 	char *mdls = g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model" );
 	strncpy( pPlayer->m_szTeamName, mdls, TEAM_NAME_LENGTH );
+
+	// int team = (int) RANDOM_FLOAT(1.5, 2.5); // Use this to "Randomly" select the team
+
+	// if(team == 1)
+	// 	pPlayer->m_iTeam = "Counter-Terrorists";
+	// else
+	// 	pPlayer->m_iTeam = "Terrorists";
 
 	RecountTeams();
 
@@ -186,6 +203,11 @@ const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 		}
 		strncpy( pPlayer->m_szTeamName, pTeamName, TEAM_NAME_LENGTH );
 	}
+
+	if (pPlayer->m_szTeamName[0] == 'C')
+		pPlayer->m_iTeam = 1;
+	else if (pPlayer->m_szTeamName[0] == 'T')
+		pPlayer->m_iTeam = 2;
 
 	return pPlayer->m_szTeamName;
 }

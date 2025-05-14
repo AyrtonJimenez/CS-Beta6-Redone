@@ -71,7 +71,7 @@ typedef enum {
 	ACT_HOVER,				// Idle while in flight
 	ACT_GLIDE,				// Fly (don't flap)
 	ACT_FLY_LEFT,	
-	ACT_AIM_SILENENCED_RILE,
+	ACT_AIM_SILENCED_RIFLE,
 	ACT_SHOOT_SILENCED_RIFLE,		// Turn left in flight
 	// ACT_FLY_RIGHT,			// Turn right in flight
 	// ACT_DETECT_SCENT,		// this means the monster smells a scent carried by the air

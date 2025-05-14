@@ -9,11 +9,13 @@
 
 
 enum M4A1_e {
+	IDLE1,
+	RELOAD,
 	DRAW,
 	SHOOT,
-	BURST_SHOOT,
-	RELOAD,
-	IDLE1
+	SHOOT1,
+	SHOOT2,
+	BURST_SHOOT
 };
 
 
@@ -22,7 +24,7 @@ class CM4A1: public CBasePlayerWeapon
 	public:
 		void Spawn (void);
 		void Precache (void);
-		int iItemSlot( void ) { return 1; }
+		int iItemSlot( void ) { return WEAPON_PRIMARY; }
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer( CBasePlayer *pPlayer );
 		void Reload(void);
@@ -32,6 +34,8 @@ class CM4A1: public CBasePlayerWeapon
 		// void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
 		// void M4A1Fire(int timeSinceLastAttack);
 		void M4A1Fire(void);
+		float GetMaxSpeed(void);
+
 
 		BOOL Deploy( void );
 		void Holster( void );
@@ -49,6 +53,8 @@ void CM4A1::Spawn()
 	SET_MODEL(ENT(pev), "models/w_m4a1.mdl"); //fill in your weapons model
 	m_iClip = M4A1_DEFAULT_GIVE; 
 
+	m_tGunType = WEAPON_PRIMARY;
+
 	FallInit();
 }
 
@@ -62,13 +68,13 @@ void CM4A1::Precache(void)
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-	PRECACHE_SOUND("sound/weapons/m4a1-1.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1-2.wav");
-	PRECACHE_SOUND("sound/dryfire_rifle.wav");
-	PRECACHE_SOUND("sound/weapons/ammo_pick.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_deploy.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_clipin.wav");
-	PRECACHE_SOUND("sound/weapons/m4a1_clipout.wav");
+	PRECACHE_SOUND("weapons/m4a1-1.wav");
+	PRECACHE_SOUND("weapons/m4a1-2.wav");
+	PRECACHE_SOUND("dryfire_rifle.wav");
+	PRECACHE_SOUND("weapons/ammo_pick.wav");
+	PRECACHE_SOUND("weapons/m4a1_deploy.wav");
+	PRECACHE_SOUND("weapons/m4a1_clipin.wav");
+	PRECACHE_SOUND("weapons/m4a1_clipout.wav");
 
 	
 }
@@ -81,7 +87,7 @@ int CM4A1::GetItemInfo(ItemInfo *p)
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = M4A1_MAX_CLIP;
-	p->iSlot = 0;
+	p->iSlot = WEAPON_PRIMARY;
 	p->iPosition = 2;
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_M4A1;
@@ -94,9 +100,17 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
+		if(pPlayer->hasPrimary) {
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "The Player already has a Primary Weapon");
+			
+			return FALSE;
+		}
+		pPlayer->hasPrimary = true;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "hasPrimary == True");
 		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
 			WRITE_BYTE( m_iId );
 		MESSAGE_END();
+
 		return TRUE;
 	}
 	return FALSE;
@@ -105,7 +119,7 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CM4A1::Deploy ()
 {
-	return DefaultDeploy( "models/v_m4a1_r.mdl", "models/p_m4a1.mdl", DRAW, "m4a1");
+	return DefaultDeploy("models/v_m4a1_r.mdl", "models/p_m4a1.mdl", DRAW, "m4a1");
 }
 
 void CM4A1::Holster()
@@ -147,7 +161,7 @@ void CM4A1::PrimaryAttack(void)
 	}
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
-	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
+	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
 	m_iClip--;
@@ -184,22 +198,22 @@ void CM4A1::M4A1Fire() {
 		{ 
 			if (FL_DUCKING) // Crouched
 					KickBack(0.55f, 0.3f, 0.2f, 0.0125f, 4.5f, 1.5f, 10);
-				else
-					KickBack(0.6f, 0.35f, 0.25f, 0.015f, 4.5f, 1.5f, 10);
-			}
 			else
-				KickBack(1.2f, 0.45f, 0.23f, 0.15f, 5.5f, 3.5f, 6);
+				KickBack(0.6f, 0.35f, 0.25f, 0.15f, 4.5f, 1.5f, 10);
+		}
+		else
+			KickBack(1.2f, 0.45f, 0.23f, 0.15f, 5.5f, 3.5f, 6);
 		}
 	else
 	{
+		// KickBack(0.65, 0.35, 0.25, 0.015, 3.5, 2.25, 7);
 		KickBack(1.0f, 0.4f, 0.23f, 0.15f, 5.0f, 3.0f, 7);
 	}
-
 	
-  UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 	Vector vecSrc = m_pPlayer->GetGunPosition();
 	Vector vecAiming = gpGlobals->v_forward;
-	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_2DEGREES, 8192, BULLET_PLAYER_556, 0);
+	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_556, 0);
 }
 
 
@@ -317,7 +331,15 @@ void CM4A1::SecondaryAttack(void)
 		m_fInZoom = 1;
 	}
 	pev->nextthink = gpGlobals->time + 0.1;
-	m_flNextSecondaryAttack = gpGlobals->time + 0.1;
+	m_flNextSecondaryAttack = gpGlobals->time + 1.0;
+}
+
+float CM4A1::GetMaxSpeed(void) 
+{
+	if (!m_fInZoom)
+		return 230;
+	else
+		return 200;
 }
 
 void CM4A1::Reload(void)
@@ -328,7 +350,6 @@ void CM4A1::Reload(void)
 		m_fInZoom = 0;
 	}
 	DefaultReload(M4A1_MAX_CLIP, RELOAD, 1.5);
-	
 }
 
 class CM4A1Ammo: public CBasePlayerAmmo
@@ -336,20 +357,20 @@ class CM4A1Ammo: public CBasePlayerAmmo
 	void Spawn (void)
 	{
 		Precache();
-		SET_MODEL(ENT(pev), "models/w_weaponbox.mdl");
+		SET_MODEL(ENT(pev), "models/w_chainammo.mdl");
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache (void)
 	{
-		PRECACHE_MODEL("models/w_weaponbox.mdl");
-		PRECACHE_SOUND("sound/ammo_pick.wav");
+		PRECACHE_MODEL("models/w_chainammo.mdl");
+		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
 	BOOL AddAmmo(CBaseEntity * pOther)
 
 	{
 		if (pOther->GiveAmmo(AMMO_M4A1_GIVE, "5.56", M4A1_MAX_CARRY)!= -1)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "sound/ammo_pick.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
 			return TRUE;
 		}
 		return FALSE;

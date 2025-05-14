@@ -450,9 +450,19 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 	{
 
 		// AJ TODO: This is where I'd put the code to check the player team and assign them their starting guns
-		pPlayer->GiveNamedItem( "weapon_crowbar" );
+		// pPlayer->hasPrimary = FALSE;
+
+		pPlayer->hasPrimary = false;
+		pPlayer->hasSecondary = true;
+
+		// if(pPlayer->m_iTeam == 1)
+		// 	pPlayer->GiveNamedItem( "weapon_m4a1" );
+		// else 
+		// 	pPlayer->GiveNamedItem( "weapon_ak47");
+
+		// pPlayer->GiveNamedItem( "weapon_crowbar" );
 		pPlayer->GiveNamedItem( "weapon_9mmhandgun" );
-		pPlayer->GiveAmmo( 68, "9mm", _9MM_MAX_CARRY );// 4 full reloads
+		pPlayer->GiveAmmo( 40, "9mm", _9MM_MAX_CARRY );// 4 full reloads
 	}
 }
 
@@ -759,6 +769,11 @@ BOOL CHalfLifeMultiplay::CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerIte
 	{
 		if ( pItem->iFlags() & ITEM_FLAG_LIMITINWORLD )
 			return CGameRules::CanHavePlayerItem( pPlayer, pItem );
+
+	// if(pItem->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
+	// 	return FALSE;
+	// if(pItem->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
+	// 	return FALSE;
 
 		// check if the player already has this weapon
 		for ( int i = 0 ; i < MAX_ITEM_TYPES ; i++ )

@@ -45,6 +45,9 @@ public:
 	virtual BOOL IsValidTeam( const char *pTeamName );
 	const char *SetDefaultPlayerTeam( CBasePlayer *pPlayer );
 	virtual void ChangePlayerTeam( CBasePlayer *pPlayer, const char *pTeamName, BOOL bKill, BOOL bGib );
+	
+	//AJ: 01-18-2025
+	virtual BOOL CanHavePlayerItem(CBasePlayer *pPlayer,CBasePlayerItem *pWeapon);
 
 private:
 	void RecountTeams( void );

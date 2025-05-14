@@ -65,7 +65,7 @@ public:
 #define WEAPON_CROWBAR			1
 #define	WEAPON_GLOCK			2
 #define WEAPON_PYTHON			3
-#define WEAPON_MP5				4
+#define WEAPON_MP5				30
 #define WEAPON_CHAINGUN			5
 #define WEAPON_CROSSBOW			6
 #define WEAPON_SHOTGUN			7
@@ -78,7 +78,7 @@ public:
 #define	WEAPON_SATCHEL			14
 #define	WEAPON_SNARK			15
 #define WEAPON_M4A1				16
-#define WEAPON_AK47				17
+#define WEAPON_AK47				4
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
@@ -198,7 +198,6 @@ typedef	enum
 	BULLET_MONSTER_12MM,
 } Bullet;
 
-
 #define ITEM_FLAG_SELECTONEMPTY		1
 #define ITEM_FLAG_NOAUTORELOAD		2
 #define ITEM_FLAG_NOAUTOSWITCHEMPTY	4
@@ -289,6 +288,18 @@ public:
 	int			iWeight( void )		{ return ItemInfoArray[ m_iId ].iWeight; }
 	int			iFlags( void )		{ return ItemInfoArray[ m_iId ].iFlags; }
 
+	// AJ: 01-18-2025
+	// Weapon Types
+	typedef enum 
+	{
+		WEAPON_PRIMARY = 1,
+		WEAPON_SECONDARY,
+		WEAPON_MELEE
+	} weapon_type;
+	weapon_type m_tGunType;
+
+
+
 	// int		m_iIdPrimary;										// Unique Id for primary ammo
 	// int		m_iIdSecondary;										// Unique Id for secondary ammo
 };
@@ -342,9 +353,9 @@ public:
 	virtual BOOL ShouldWeaponIdle( void ) {return FALSE; };
 	virtual void Holster( void );
 	
-	void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
 
-
+	// AJ: 01-18-2025
+	void KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
 
 	int	PrimaryAmmoIndex(); 
 	int	SecondaryAmmoIndex(); 

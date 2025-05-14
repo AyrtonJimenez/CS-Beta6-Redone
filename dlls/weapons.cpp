@@ -81,7 +81,7 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 {
 	float flFront, flSide;
 
-	if (m_iShotsFired == 1)
+		if (m_iShotsFired == 1)
 	{
 		flFront = up_base;
 		flSide = lateral_base;
@@ -112,10 +112,11 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 			m_pPlayer->pev->punchangle.y = -lateral_max;
 	}
 
-  ALERT(at_console, "Punch X: %3f Punch Y: %3f \n", m_pPlayer->pev->punchangle.x , m_pPlayer->pev->punchangle.y);
-    
 	if (!RANDOM_LONG(0, direction_change))
 		m_iDirection = !m_iDirection;
+
+  ALERT(at_console, "Punch X: %3f Punch Y: %3f \n", m_pPlayer->pev->punchangle.x , m_pPlayer->pev->punchangle.y);
+    
 }
 
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
@@ -762,6 +763,11 @@ int CBasePlayerItem::AddToPlayer( CBasePlayer *pPlayer )
 {
 	m_pPlayer = pPlayer;
 
+	if(iItemSlot() == 0)
+		pPlayer->hasPrimary = true;
+	if(iItemSlot() == 1)
+		pPlayer->hasSecondary = true;
+
 	return TRUE;
 }
 
@@ -769,6 +775,7 @@ void CBasePlayerItem::Drop( void )
 {
 	SetTouch( NULL );
 	SetThink(SUB_Remove);
+
 	pev->nextthink = gpGlobals->time + .1;
 }
 
@@ -1160,7 +1167,7 @@ int CBasePlayerWeapon::ExtractClipAmmo( CBasePlayerWeapon *pWeapon )
 	
 	return pWeapon->m_pPlayer->GiveAmmo( iAmmo, (char *)pszAmmo1(), iMaxAmmo1() ); // , &m_iPrimaryAmmoType
 }
-	
+
 //=========================================================
 // RetireWeapon - no more ammo for this gun, put it away.
 //=========================================================
@@ -1282,6 +1289,18 @@ void CWeaponBox::Touch( CBaseEntity *pOther )
 	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
 	int i;
 
+	if(GetClassPtr( (CBasePlayerItem *)pev)->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You already have a primary weapon");
+		return;
+	}
+
+	if(GetClassPtr( (CBasePlayerItem *)pev)->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You already have a secondary weapon");
+		return;
+	}
+
 // dole out ammo
 	for ( i = 0 ; i < MAX_AMMO_SLOTS ; i++ )
 	{
@@ -1373,6 +1392,46 @@ BOOL CWeaponBox::PackWeapon( CBasePlayerItem *pWeapon )
 	pWeapon->SetThink( NULL );// crowbar may be trying to swing again, etc.
 	pWeapon->SetTouch( NULL );
 	pWeapon->m_pPlayer = NULL;
+
+	// AJ: 01-18-2025
+	if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_crowbar")))
+	SET_MODEL( ENT(pev), "models/w_crowbar.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_9mmhandgun")))
+	SET_MODEL( ENT(pev), "models/w_9mmhandgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_357")))
+	SET_MODEL( ENT(pev), "models/w_357.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_shotgun")))
+	SET_MODEL( ENT(pev), "models/w_shotgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_9mmAR")))
+	SET_MODEL( ENT(pev), "models/w_9mmar.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_crossbow")))
+	SET_MODEL( ENT(pev), "models/w_crossbow.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_rpg")))
+	SET_MODEL( ENT(pev), "models/w_rpg.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_gauss")))
+	SET_MODEL( ENT(pev), "models/w_gauss.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_hornetgun")))
+	SET_MODEL( ENT(pev), "models/w_hgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_egon")))
+	SET_MODEL( ENT(pev), "models/w_egon.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_snark")))
+	SET_MODEL( ENT(pev), "models/w_squeak.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_m4a1")))
+	SET_MODEL( ENT(pev), "models/w_m4a1.mdl");
+		else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_ak47")))
+	SET_MODEL( ENT(pev), "models/w_ak47.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_tripmine")))
+	{
+	pev->body = 3;
+	pev->sequence = 8;
+	pev->absmin = pev->origin + Vector(-16, -16, -5);
+	pev->absmax = pev->origin + Vector(16, 16, 28); 
+	SET_MODEL( ENT(pev), "models/v_tripmine.mdl");
+	}
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_handgrenade")))
+	SET_MODEL( ENT(pev), "models/w_grenade.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_satchel")))
+	SET_MODEL( ENT(pev), "models/w_satchel.mdl");
 
 	//ALERT ( at_console, "packed %s\n", STRING(pWeapon->pev->classname) );
 

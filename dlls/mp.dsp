@@ -100,7 +100,7 @@ InputPath=.\debugmp\mp.dll
 SOURCE="$(InputPath)"
 
 "$(TargetName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetPath) G:\Github\CS-Beta6-Redone\Builds\1016\testmod\dlls
+	copy $(TargetPath) Z:\media\ayrton\SHARED FILE\Github\CS-Beta6-Redone\Builds\1016\testmod\dlls
 
 # End Custom Build
 

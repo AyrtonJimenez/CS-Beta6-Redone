@@ -49,6 +49,10 @@ extern Vector VecBModelOrigin(entvars_t *pevBModel );
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 int MapTextureTypeStepType(char chTextureType);
 
+// AJ: 01-18-2025
+float m_flAnimTime; 
+float m_flFlinchTime; 
+
 // the world node graph
 extern CGraph	WorldGraph;
 
@@ -944,6 +948,11 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 			m_IdealActivity = ACT_WALK;
 		}
 		break;
+	case PLAYER_SHOOT_SILENCED_RIFLE:
+		if (m_flAnimTime > gpGlobals->time)
+			return;
+		m_IdealActivity = ACT_SHOOT_SILENCED_RIFLE;
+		break;
 	}
 
 	switch (m_IdealActivity)
@@ -1012,6 +1021,19 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		{
 			animDesired = pev->sequence;
 		}
+		break;
+	case ACT_SHOOT_SILENCED_RIFLE:
+		animDesired = LookupSequence ("ref_shoot_sileneced_rifle");
+
+		m_flAnimTime = gpGlobals->time + 0.1;// should always be this 
+		m_flFlinchTime = gpGlobals->time + 0.375; //time in secs of how long your anim is
+
+		pev->gaitsequence = 0;
+		pev->sequence = animDesired;
+		pev->frame = 0;
+		ResetSequenceInfo();
+		return;
+	break;
 	}
 
 	if ( FBitSet( pev->flags, FL_DUCKING ) )
@@ -2246,12 +2268,12 @@ void CBasePlayer::PreThink(void)
 
 
 
-	if(UTIL_PointContents(pev->origin) == CONTENTS_BUYZONE) {
-		m_bInBuy = true;
-		ALERT(at_console, "The Player is in the buy zone!\n");
-	}
-	else
-		m_bInBuy = false;
+	// if(UTIL_PointContents(pev->origin) == CONTENTS_BUYZONE) {
+	// 	m_bInBuy = true;
+	// 	ALERT(at_console, "The Player is in the buy zone!\n");
+	// }
+	// else
+	// 	m_bInBuy = false;
 	
 }
 /* Time based Damage works as follows: 
@@ -3979,6 +4001,11 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
 		g_pGameRules->PlayerGotWeapon ( this, pItem );
 		pItem->CheckRespawn();
 
+		if(pItem->iItemSlot() == 0)
+			hasPrimary = TRUE;
+		if(pItem->iItemSlot() == 1)
+			hasSecondary = TRUE;
+
 		pItem->m_pNext = m_rgpPlayerItems[pItem->iItemSlot()];
 		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
 
@@ -4772,6 +4799,8 @@ void CBasePlayer::DropPlayerItem ( char *pszItemName )
 				// trying to drop active item
 				if ( pWeapon == m_pActiveItem )
 				{
+					// if(pWeapon->m_iId >= 16)
+					// 	hasPrimary = false;
 					// active item!
 					break;
 				}
@@ -4794,6 +4823,7 @@ void CBasePlayer::DropPlayerItem ( char *pszItemName )
 			CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create( "weaponbox", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict() );
 			pWeaponBox->pev->angles.x = 0;
 			pWeaponBox->pev->angles.z = 0;
+
 			pWeaponBox->PackWeapon( pWeapon );
 			pWeaponBox->pev->velocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 			
@@ -4821,6 +4851,15 @@ void CBasePlayer::DropPlayerItem ( char *pszItemName )
 
 			}
 
+			if(pWeapon->m_iId <= 16) {
+				ClientPrint(pev, HUD_PRINTCENTER, "The Player no longer has a Primary Weapon");
+				hasPrimary = false;
+			}
+			if(pWeapon->m_iId == 2 ){
+				ClientPrint(pev, HUD_PRINTCENTER, "The Player no longer has a Secondary Weapon");
+				hasSecondary = false;
+			}
+
 			return;// we're done, so stop searching with the FOR loop.
 		}
 	}
@@ -4835,6 +4874,9 @@ BOOL CBasePlayer::HasPlayerItem( CBasePlayerItem *pCheckItem )
 
 	while (pItem)
 	{
+		// if(HasPrimaryWeapon() && pCheckItem->iItemSlot() == CBasePlayerWeapon::WEAPON_MELEE)
+		// 	return TRUE;
+
 		if (FClassnameIs( pItem->pev, STRING( pCheckItem->pev->classname) ))
 		{
 			return TRUE;
@@ -4843,6 +4885,25 @@ BOOL CBasePlayer::HasPlayerItem( CBasePlayerItem *pCheckItem )
 	}
 
 	return FALSE;
+}
+
+//AJ: 01-18-2025
+//=========================================================
+// HasPrimaryWeapon - Does the player already have a Primary gun?
+//=========================================================
+	
+BOOL CBasePlayer::HasPrimaryWeapon(void)
+{
+	return hasPrimary;
+}
+
+//=========================================================
+// HasSecondaryWeapon - Does the player already have a Secondary gun?
+//=========================================================
+	
+BOOL CBasePlayer::HasSecondaryWeapon(void)
+{
+	return hasPrimary;
 }
 
 //=========================================================

@@ -17,3 +17,4 @@ cl_dlls/debugmp
 *.lib
 *.sbr
 *.mak
+*.htm
