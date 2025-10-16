@@ -355,21 +355,8 @@ void CM4A1::SecondaryAttack(void)
 		m_pPlayer->m_iFOV = 45;
 		m_fInZoom = true;
 	}
-<<<<<<< HEAD
 	pev->nextthink = gpGlobals->time + 0.5;
 	m_flNextSecondaryAttack = gpGlobals->time + 0.5;
-=======
-	pev->nextthink = gpGlobals->time + 0.1;
-	m_flNextSecondaryAttack = gpGlobals->time + 1.0;
-}
-
-float CM4A1::GetMaxSpeed(void) 
-{
-	if (!m_fInZoom)
-		return 230;
-	else
-		return 200;
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 float CM4A1::GetMaxSpeed(void) 
