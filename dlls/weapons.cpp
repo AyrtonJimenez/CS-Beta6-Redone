@@ -81,7 +81,6 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 {
 	float flFront, flSide;
 
-<<<<<<< HEAD
 	if (m_iShotsFired == 1)
     {
         flFront = up_base;
@@ -99,8 +98,7 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     // Apply upward (pitch) recoil
     m_pPlayer->pev->punchangle.x -= flFront;
 
-	    // ✅ Proper vertical clamping: recoil goes upward (negative x), 
-    // so clamp between -up_max and +up_max correctly
+
     if (m_pPlayer->pev->punchangle.x < -up_max)
         m_pPlayer->pev->punchangle.x = -up_max;
     else if (m_pPlayer->pev->punchangle.x > up_max)
@@ -110,7 +108,6 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     {
         m_pPlayer->pev->punchangle.y += flSide;
 
-        // ✅ Clamp horizontal recoil properly both directions
         if (m_pPlayer->pev->punchangle.y > lateral_max)
             m_pPlayer->pev->punchangle.y = lateral_max;
         else if (m_pPlayer->pev->punchangle.y < -lateral_max)
@@ -150,7 +147,6 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     // Randomly change direction after a certain number of shots
     if (!RANDOM_LONG(0, direction_change))
         m_iDirection = !m_iDirection;
-=======
 		if (m_iShotsFired == 1)
 	{
 		flFront = up_base;
@@ -187,7 +183,6 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 
   ALERT(at_console, "Punch X: %3f Punch Y: %3f \n", m_pPlayer->pev->punchangle.x , m_pPlayer->pev->punchangle.y);
     
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
