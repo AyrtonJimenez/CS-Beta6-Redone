@@ -65,7 +65,7 @@ public:
 #define WEAPON_CROWBAR			1
 #define	WEAPON_GLOCK			2
 #define WEAPON_PYTHON			3
-#define WEAPON_MP5				4
+#define WEAPON_MP5				30
 #define WEAPON_CHAINGUN			5
 #define WEAPON_CROSSBOW			6
 #define WEAPON_SHOTGUN			7
@@ -78,13 +78,13 @@ public:
 #define	WEAPON_SATCHEL			14
 #define	WEAPON_SNARK			15
 #define WEAPON_M4A1				16
-#define WEAPON_AK47
+#define WEAPON_AK47				4
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
 #define WEAPON_SUIT				31	// ?????
 
-#define MAX_WEAPONS			32
+#define MAX_WEAPONS			100
 
 
 #define MAX_NORMAL_BATTERY	100
@@ -198,7 +198,6 @@ typedef	enum
 	BULLET_MONSTER_12MM,
 } Bullet;
 
-
 #define ITEM_FLAG_SELECTONEMPTY		1
 #define ITEM_FLAG_NOAUTORELOAD		2
 #define ITEM_FLAG_NOAUTOSWITCHEMPTY	4
@@ -289,6 +288,18 @@ public:
 	int			iWeight( void )		{ return ItemInfoArray[ m_iId ].iWeight; }
 	int			iFlags( void )		{ return ItemInfoArray[ m_iId ].iFlags; }
 
+	// AJ: 01-18-2025
+	// Weapon Types
+	typedef enum 
+	{
+		WEAPON_PRIMARY = 1,
+		WEAPON_SECONDARY,
+		WEAPON_MELEE
+	} weapon_type;
+	weapon_type m_tGunType;
+
+
+
 	// int		m_iIdPrimary;										// Unique Id for primary ammo
 	// int		m_iIdSecondary;										// Unique Id for secondary ammo
 };
@@ -342,6 +353,10 @@ public:
 	virtual BOOL ShouldWeaponIdle( void ) {return FALSE; };
 	virtual void Holster( void );
 	
+
+	// AJ: 01-18-2025
+	void KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
+
 	int	PrimaryAmmoIndex(); 
 	int	SecondaryAmmoIndex(); 
 
@@ -354,6 +369,11 @@ public:
 	int		m_iClientClip;										// the last version of m_iClip sent to hud dll
 	int		m_iClientWeaponState;								// the last version of the weapon state sent to hud dll (is current weapon, is on target)
 	int		m_fInReload;										// Are we in the middle of a reload;
+
+	int     m_iShotsFired;
+	float   m_flAccuracy;
+	bool    m_bDelayFire;
+	int     m_iDirection;
 
 	int		m_iDefaultAmmo;// how much ammo you get when you pick up this weapon as placed by a level designer.
 };
@@ -459,6 +479,8 @@ public:
 
 	int m_cAmmoTypes;// how many ammo types packed into this box (if packed by a level designer)
 };
+
+void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
 
 
 #endif // WEAPONS_H

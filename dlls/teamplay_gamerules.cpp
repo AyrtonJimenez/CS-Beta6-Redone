@@ -23,10 +23,15 @@
 #include	"gamerules.h"
 #include	"teamplay_gamerules.h"
 #include	"game.h"
+#include 	"client.h"
 
 static char team_names[MAX_TEAMS][MAX_TEAMNAME_LENGTH];
 static int team_scores[MAX_TEAMS];
 static int num_teams = 0;
+
+#define CT 0
+#define TERRORIST 1
+
 
 extern DLL_GLOBAL BOOL		g_fGameOver;
 
@@ -97,6 +102,29 @@ void CHalfLifeTeamplay :: Think ( void )
 			}
 		}
 	}
+	/*
+	I belive this bit is when the time is over, and the teams are tied
+	thats why he sets m_iCTWin = 3, m_iCTWin is the variable that handles wich team
+	won the round, it goes like this:
+
+	m_iCTWin = 1; // The Counter-Terrorists Won
+	m_iCTWin = 2; // The Terrorist Won
+	m_iCTWin = 3; // The teams tied.
+	*/
+
+	if (gpGlobals->time > m_flRoundTime + 385.0 ) // here he checks if the 6 minutes limit for the round are over.
+	{ 
+		m_iCTWin = 3; // Teams are Tied
+		m_flRestartRoundTime = gpGlobals->time + 5.0; // Next round starts in 5 seconds
+		m_flRoundTime = gpGlobals->time + 60; // 1 more minute (Suddent Dead?)
+	}
+
+	if ((m_flRestartRoundTime != 0.0) && (m_flRestartRoundTime <= gpGlobals->time))  // Time is Up!
+		RestartRound(); // Restart Round!
+	
+	/*End of Gooseman's Stuff*/
+
+
 }
 
 //=========================================================
@@ -123,6 +151,7 @@ BOOL CHalfLifeTeamplay :: ClientCommand( CBasePlayer *pPlayer, const char *pcmd 
 
 extern int gmsgGameMode;
 extern int gmsgSayText;
+extern int gmsgTeamSayText;
 extern int gmsgTeamInfo;
 
 
@@ -133,12 +162,29 @@ void CHalfLifeTeamplay :: UpdateGameMode( CBasePlayer *pPlayer )
 	MESSAGE_END();
 }
 
+BOOL CHalfLifeTeamplay::CanHavePlayerItem(CBasePlayer *pPlayer,CBasePlayerItem *pItem)
+{
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
+		return FALSE;
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
+		return FALSE;
+
+return CHalfLifeMultiplay::CanHavePlayerItem(pPlayer,pItem);
+}
+
 
 const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 {
 	// copy out the team name from the model
 	char *mdls = g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pPlayer->edict() ), "model" );
 	strncpy( pPlayer->m_szTeamName, mdls, TEAM_NAME_LENGTH );
+
+	// int team = (int) RANDOM_FLOAT(1.5, 2.5); // Use this to "Randomly" select the team
+
+	// if(team == 1)
+	// 	pPlayer->m_iTeam = "Counter-Terrorists";
+	// else
+	// 	pPlayer->m_iTeam = "Terrorists";
 
 	RecountTeams();
 
@@ -157,6 +203,11 @@ const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 		}
 		strncpy( pPlayer->m_szTeamName, pTeamName, TEAM_NAME_LENGTH );
 	}
+
+	if (pPlayer->m_szTeamName[0] == 'C')
+		pPlayer->m_iTeam = 1;
+	else if (pPlayer->m_szTeamName[0] == 'T')
+		pPlayer->m_iTeam = 2;
 
 	return pPlayer->m_szTeamName;
 }
@@ -549,4 +600,109 @@ void CHalfLifeTeamplay::RecountTeams( void )
 			}
 		}
 	}
+}
+
+
+/**
+ * Begin the CS Gamerule code
+ * @author Gooseman and Ayrton(who's putting this together)
+ * 
+ */
+
+
+
+
+void CHalfLifeMultiplay::RestartRound( void ) 
+{
+	// TODO: Figure out whatever the fuck this does
+	// // Clear the kicktable
+	// for (int i = 0; i <= 19; i++)
+	// 	m_iKickTable [i] = 0;
+
+	/*
+	Ok, I'm going to comment out this part, this is all the hostage checking, respawning and money award
+	code, I'm still going to explain what it does, but right now we just want to restart the round
+	when the time is over
+
+	// Update accounts based on number of hostages remaining.. SUB_Remove these hostage entities.
+	CBaseEntity* hostage = NULL; 
+	CHostage* temp;
+
+	hostage = (CBaseMonster*) UTIL_FindEntityByClassname(NULL, "hostage_entity"); // Here we search for the "hostage_entity" entity, that would be the hostage dudes.
+	while (hostage != NULL)   
+	{
+	if (hostage->pev->solid != SOLID_NOT) // If they're alive (?), we check what team won, so we can
+				// reward them.
+	{
+	if (m_iCTWin == 2) // terrorists won // Terrorist won
+		m_iAccountTerrorist += 400; // give 400$ for each hostage alive
+	else if (m_iCTWin == 1) // CT Won 
+		m_iAccountCT += 400; //  It is Pay Day (sorry, playing too much Dungeon Keeper 2 =)
+
+	if (hostage->pev->deadflag == DEAD_DEAD) // If the hostage is dead
+		hostage->pev->deadflag = DEAD_RESPAWNABLE; // Make it respawnable
+	}
+	temp = (CHostage*) hostage;
+	temp->RePosition(); // Respawn the Hostage
+	hostage = (CBaseMonster*) UTIL_FindEntityByClassname(hostage, "hostage_entity");
+	}
+
+	// Give the losing team a charity bonus.. that way, they can get back in the game..
+	if (m_iCTWin == 2) // Terrorist Won
+	m_iAccountCT += 800; // Give the CT some money
+	else if (m_iCTWin == 1) // CT Won
+	m_iAccountTerrorist += 800; // Give the bad guys some money.
+
+	//Update CT account based on number of hostages rescued
+	m_iAccountCT += m_iHostagesRescued * 350; // m_iHostageRescued, is a variable that updates each time a hostage 
+			// is rescued, so we know how many we saved.
+	*/
+
+	// Update individual players accounts and respawn players
+	CBaseEntity* pPlayer = NULL;
+	CBasePlayer* player;
+
+	pPlayer = UTIL_FindEntityByClassname ( pPlayer, "player" ); // We find the player
+	while (  (pPlayer != NULL) && (!FNullEnt(pPlayer->edict())) )
+	{
+		if ( pPlayer->IsPlayer() && pPlayer->pev->flags != FL_DORMANT )
+		{
+			player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+
+			if ( (m_iNumCT != 0) && (m_iNumTerrorist != 0) ) // m_iNumCT and m_iNumTerrorist are the variables
+			// were he stores the number of players on each team
+			{
+				if ( player->m_iTeam == CT ) // m_iTeam is the name of the team
+					player->AddAccount( m_iAccountCT ); // We update his checkbook
+				else if ( player->m_iTeam == TERRORIST )
+					player->AddAccount( m_iAccountTerrorist );
+			}
+
+			// Respawn players
+			if ( player->pev->deadflag == ( (DEAD_DYING) || (DEAD_DEAD) || (DEAD_RESPAWNABLE) ) ) // here he checks every possible dead flag	
+			{
+				respawn ( pPlayer->pev, FALSE ); // Respawn!, FALSE means that we're not leaving a corpse behind
+				pPlayer->pev->button = 0;
+				player->m_iRespawnFrames = 0;
+				pPlayer->pev->nextthink = -1;
+			}
+			else
+			{
+				player->m_iRespawnFrames = 0;
+				respawn ( pPlayer->pev, FALSE ); // Respawn!, FALSE means that we're not leaving a corpse behind
+			}
+				// EMIT_SOUND(ENT(player->pev), CHAN_VOICE, "radio/go.wav", 1, ATTN_NORM); // Ok lets go...
+		}
+		pPlayer = UTIL_FindEntityByClassname ( pPlayer, "player" ); // and we find the player
+	}
+	
+
+	// Reset game variables
+	m_flIntermissionEndTime = 0;
+	m_flRestartRoundTime = 0.0;  // the round is not going to restart anytime soon
+	m_iAccountTerrorist = m_iAccountCT = 0; // No money on the floor to pick up until the end of the round
+	//m_iHostagesRescued = 0; // They're all at the Terrorist's base
+	//m_iHostagesTouched = 0; // Hmm.. now this is just sick =P.
+	m_iCTWin = 0; // Nobody has won the round yet.
+	m_flRoundTime = gpGlobals->time; // Timer starts!   
 }

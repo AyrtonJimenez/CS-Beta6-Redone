@@ -56,7 +56,7 @@
 #define	SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
 #define	SOUND_FLASHLIGHT_OFF	"items/flashlight1.wav"
 
-#define TEAM_NAME_LENGTH	16
+#define TEAM_NAME_LENGTH	18
 
 typedef enum
 {
@@ -66,6 +66,8 @@ typedef enum
 	PLAYER_SUPERJUMP,
 	PLAYER_DIE,
 	PLAYER_ATTACK1,
+	PLAYER_AIM_SILENCED_RIFLE,
+	PLAYER_SHOOT_SILENCED_RIFLE
 } PLAYER_ANIM;
 
 class CBasePlayer : public CBaseMonster
@@ -275,6 +277,21 @@ public:
 
 	void SetCustomDecalFrames( int nFrames );
 	int GetCustomDecalFrames( void );
+
+	/**
+	 *  Add in Counter-Strike Methods
+	 */
+
+	BOOL HasPrimaryWeapon(void);
+	BOOL HasSecondaryWeapon(void);
+
+	BOOL hasPrimary;
+	BOOL hasSecondary;
+
+	int m_iTeam;
+	int m_iMoneyCount;
+	void AddAccount(int moneyToAdd);
+	BOOL m_bInBuy;
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

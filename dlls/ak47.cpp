@@ -8,18 +8,14 @@
 #include "gamerules.h"
 
 
-
-
-
-
-enum ak47_e 
+enum AK47_e 
 {
 	idle1,
 	reload,
 	draw,
 	shoot1,
 	shoot2,
-	shoot3,
+	shoot3
 };
 
 
@@ -28,33 +24,31 @@ class CAK47: public CBasePlayerWeapon
 	public:
 		void Spawn (void);
 		void Precache (void);
-		int iItemSlot( void ) { return 1; }
+		int iItemSlot(void) { return WEAPON_PRIMARY; }
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer( CBasePlayer *pPlayer );
 		void Reload(void);
-		void PrimaryAttack( void );
-		void SecondaryAttack(void);
+		void PrimaryAttack(void);
+		void AK47Fire(int timeSinceLastAttack);
+		BOOL Deploy(void);
+		void Holster(void);
 
-		BOOL Deploy( void );
-		void Holster( void );
-		void WeaponIdle( void );
 };
 
 
 LINK_ENTITY_TO_CLASS (weapon_ak47, CAK47);
 
 
-
 void CAK47::Spawn() 
 {
-	Precache( ); //call precache
-	m_iId = WEAPON_AK47; //this will be the name defined in weapons.h
-	SET_MODEL(ENT(pev), "models/w_ak47.mdl"); //fill in your weapons model
+	Precache();
+	m_iId = WEAPON_AK47;
+	SET_MODEL(ENT(pev), "models/w_ak47.mdl");
 	m_iClip = AK47_DEFAULT_GIVE; 
+	m_tGunType = WEAPON_PRIMARY;
 
 	FallInit();
 }
-
 
 void CAK47::Precache(void)
 {
@@ -72,8 +66,8 @@ void CAK47::Precache(void)
 	PRECACHE_SOUND("sound/weapons/ak47_boltpull.wav");
 	PRECACHE_SOUND("sound/weapons/ak47_clipin.wav");
 	PRECACHE_SOUND("sound/weapons/ak47_clipout.wav");
-
 }
+
 
 int CAK47::GetItemInfo(ItemInfo *p)
 {
@@ -83,8 +77,8 @@ int CAK47::GetItemInfo(ItemInfo *p)
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = AK47_MAX_CLIP;
-	p->iSlot = 0;
-	p->iPosition = 2;
+	p->iSlot = WEAPON_PRIMARY; //The horizontal one
+	p->iPosition = 1; //The vertical one
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_AK47;
 	p->iWeight = AK47_WEIGHT;
@@ -96,9 +90,17 @@ int CAK47::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
+		if(pPlayer->hasPrimary) {
+			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "The Player already has a Primary Weapon");
+
+			return FALSE;
+		}
+		pPlayer->hasPrimary = true;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "hasPrimary == True");
 		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
 			WRITE_BYTE( m_iId );
 		MESSAGE_END();
+
 		return TRUE;
 	}
 	return FALSE;
@@ -107,25 +109,21 @@ int CAK47::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CAK47::Deploy ()
 {
-	return DefaultDeploy( "models/v_ak47_r.mdl", "models/p_ak47.mdl", draw, "AK47");
+	return DefaultDeploy("models/v_ak47_r.mdl", "models/p_ak47.mdl", draw, "AK47");
 }
 
 void CAK47::Holster()
 {
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5; //Same for all
-	SendWeaponAnim( idle1);
-}
-
-void CAK47::WeaponIdle(void)
-{
 	SendWeaponAnim(idle1);
 }
+
 
 void CAK47::PrimaryAttack(void)
 {
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
-		PlayEmptySound( );
+		PlayEmptySound();
 		m_flNextPrimaryAttack = gpGlobals->time + 0.15;
 		return;
 	}
@@ -137,17 +135,17 @@ void CAK47::PrimaryAttack(void)
 		else
 		{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "sound/weapons/ak47-1.wav", 0.8, ATTN_NORM);
-		m_flNextPrimaryAttack = gpGlobals->time + 0.1;
+		m_flNextPrimaryAttack = gpGlobals->time + 0.115;
 		}
 		return;
 	}
 
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
 
-	m_pPlayer->SetAnimation ( PLAYER_ATTACK1);
+	m_pPlayer->SetAnimation ( PLAYER_SHOOT_SILENCED_RIFLE);
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
@@ -157,19 +155,51 @@ void CAK47::PrimaryAttack(void)
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_762, 0);
 
-	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.02;
+	// Trace Line Testing
+	TraceResult tr;
+	//Vector vecDir = gpGlobals->v_forward;
+	//UTIL_TraceLine(vecSrc, vecSrc + vecDir * 8192, ignore_monsters, m_pPlayer->edict(), &tr);
+
+	// if (tr.pHit->v.takedamage)
+	// {
+	// 	ALERT(at_console, "Something was hit");
+	// }
+
+	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.115;
 	if (m_flNextPrimaryAttack < gpGlobals->time)
-		m_flNextPrimaryAttack = gpGlobals->time + 0.02;
+		m_flNextPrimaryAttack = gpGlobals->time + 0.115;
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-	m_pPlayer->pev->punchangle.x -= 2;
+	AK47Fire(gpGlobals->time);
 }
 
-void CAK47::SecondaryAttack(void)
-{
 
+
+void CAK47::AK47Fire(int timeSinceLastAttack)
+{
+	float multiplier = 1.0;
+	int consecutiveShots = 0;
+
+	if(timeSinceLastAttack <= 0.115 && consecutiveShots < 15)
+	{
+		m_pPlayer->pev->punchangle.x += multiplier;
+		m_pPlayer->pev->punchangle.y -= 0.725;
+		multiplier *= 2.5;
+		consecutiveShots += 1;
+	}
+	if(timeSinceLastAttack <= 0.115 && consecutiveShots > 15)
+	{
+		m_pPlayer->pev->punchangle.x = 7.25;
+		m_pPlayer->pev->punchangle.y += RANDOM_FLOAT(0, 2);
+		consecutiveShots += 1;
+	}
+	else
+	{
+		m_pPlayer->pev->punchangle.x -= 1.5;
+		m_pPlayer->pev->punchangle.y -= 0.725;
+	}
 }
 
 void CAK47::Reload(void)
@@ -190,8 +220,8 @@ class CAK47Ammo: public CBasePlayerAmmo
 		PRECACHE_MODEL("models/w_weaponbox.mdl");
 		PRECACHE_SOUND("sound/ammo_pick.wav");
 	}
-	BOOL AddAmmo(CBaseEntity * pOther)
 
+	BOOL AddAmmo(CBaseEntity * pOther)
 	{
 		if (pOther->GiveAmmo(AMMO_AK47_GIVE, "7.62", AK47_MAX_CARRY)!= -1)
 		{

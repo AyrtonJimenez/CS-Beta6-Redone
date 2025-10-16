@@ -17,6 +17,7 @@
   <PropertyGroup Label="Globals">
     <SccProjectName>"$/SDKSrc/Public/dlls", NVGBAAAA</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
+    <ProjectGuid>{03A9906A-562E-2B37-1797-213F6B6BF5BE}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">

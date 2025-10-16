@@ -77,6 +77,86 @@ int MaxAmmoCarry( int iszName )
 }
 
 	
+void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+{
+	float flFront, flSide;
+
+	if (m_iShotsFired == 1)
+    {
+        flFront = up_base;
+        flSide  = lateral_base;
+    }
+    else
+    {
+        flFront = up_base + m_iShotsFired * up_modifier;
+        flSide  = lateral_base + m_iShotsFired * lateral_modifier;
+    }
+
+	    // Optional debug output (from the disassembly)
+    ALERT(at_console,"Kick: UP = %.2f/%.2f  LAT = %.2f/%.2f\n", flFront, up_max, flSide, lateral_max);
+
+    // Apply upward (pitch) recoil
+    m_pPlayer->pev->punchangle.x -= flFront;
+
+	    // ✅ Proper vertical clamping: recoil goes upward (negative x), 
+    // so clamp between -up_max and +up_max correctly
+    if (m_pPlayer->pev->punchangle.x < -up_max)
+        m_pPlayer->pev->punchangle.x = -up_max;
+    else if (m_pPlayer->pev->punchangle.x > up_max)
+        m_pPlayer->pev->punchangle.x = up_max;
+
+    if (m_iDirection == 1)
+    {
+        m_pPlayer->pev->punchangle.y += flSide;
+
+        // ✅ Clamp horizontal recoil properly both directions
+        if (m_pPlayer->pev->punchangle.y > lateral_max)
+            m_pPlayer->pev->punchangle.y = lateral_max;
+        else if (m_pPlayer->pev->punchangle.y < -lateral_max)
+            m_pPlayer->pev->punchangle.y = -lateral_max;
+    }
+    else
+    {
+        m_pPlayer->pev->punchangle.y -= flSide;
+
+        if (m_pPlayer->pev->punchangle.y < -lateral_max)
+            m_pPlayer->pev->punchangle.y = -lateral_max;
+        else if (m_pPlayer->pev->punchangle.y > lateral_max)
+            m_pPlayer->pev->punchangle.y = lateral_max;
+	}
+    // // Clamp vertical recoil to max value
+    // if (m_pPlayer->pev->punchangle.x < -up_max)
+    //     m_pPlayer->pev->punchangle.x = -up_max;
+
+    // // Apply horizontal (yaw) recoil based on current direction
+    // if (m_iDirection == 1)
+    // {
+    //     m_pPlayer->pev->punchangle.x += flSide;
+
+    //     // Clamp to max right-side recoil
+    //     if (m_pPlayer->pev->punchangle.x > lateral_max)
+    //         m_pPlayer->pev->punchangle.x = lateral_max;
+    // }
+    // else
+    // {
+    //     m_pPlayer->pev->punchangle.y -= flSide;
+
+    //     // Clamp to max left-side recoil
+    // 	if (m_pPlayer->pev->punchangle.x < -lateral_max)
+    //         m_pPlayer->pev->punchangle.x = -lateral_max;
+    
+
+    // Randomly change direction after a certain number of shots
+    if (!RANDOM_LONG(0, direction_change))
+        m_iDirection = !m_iDirection;
+}
+
+void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
+{
+
+}
+
+
 /*
 ==============================================================================
 
@@ -333,8 +413,12 @@ void W_Precache(void)
 	UTIL_PrecacheOtherWeapon( "weapon_9mmAR" );
 	UTIL_PrecacheOther( "ammo_9mmAR" );
 	UTIL_PrecacheOther( "ammo_ARgrenades" );
+
+	// new weapons
 	UTIL_PrecacheOtherWeapon("weapon_m4a1");
 	UTIL_PrecacheOther("ammo_m4a1");
+	UTIL_PrecacheOtherWeapon("weapon_ak47");
+	UTIL_PrecacheOther("ammo_ak47");
 
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	// python
@@ -460,6 +544,8 @@ void CBasePlayerItem :: SetObjectCollisionBox( void )
 	pev->absmin = pev->origin + Vector(-24, -24, 0);
 	pev->absmax = pev->origin + Vector(24, 24, 16); 
 }
+
+
 
 
 //=========================================================
@@ -709,6 +795,11 @@ int CBasePlayerItem::AddToPlayer( CBasePlayer *pPlayer )
 {
 	m_pPlayer = pPlayer;
 
+	if(iItemSlot() == 0)
+		pPlayer->hasPrimary = true;
+	if(iItemSlot() == 1)
+		pPlayer->hasSecondary = true;
+
 	return TRUE;
 }
 
@@ -716,6 +807,7 @@ void CBasePlayerItem::Drop( void )
 {
 	SetTouch( NULL );
 	SetThink(SUB_Remove);
+
 	pev->nextthink = gpGlobals->time + .1;
 }
 
@@ -1107,7 +1199,7 @@ int CBasePlayerWeapon::ExtractClipAmmo( CBasePlayerWeapon *pWeapon )
 	
 	return pWeapon->m_pPlayer->GiveAmmo( iAmmo, (char *)pszAmmo1(), iMaxAmmo1() ); // , &m_iPrimaryAmmoType
 }
-	
+
 //=========================================================
 // RetireWeapon - no more ammo for this gun, put it away.
 //=========================================================
@@ -1229,6 +1321,18 @@ void CWeaponBox::Touch( CBaseEntity *pOther )
 	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
 	int i;
 
+	if(GetClassPtr( (CBasePlayerItem *)pev)->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You already have a primary weapon");
+		return;
+	}
+
+	if(GetClassPtr( (CBasePlayerItem *)pev)->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
+	{
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "You already have a secondary weapon");
+		return;
+	}
+
 // dole out ammo
 	for ( i = 0 ; i < MAX_AMMO_SLOTS ; i++ )
 	{
@@ -1320,6 +1424,46 @@ BOOL CWeaponBox::PackWeapon( CBasePlayerItem *pWeapon )
 	pWeapon->SetThink( NULL );// crowbar may be trying to swing again, etc.
 	pWeapon->SetTouch( NULL );
 	pWeapon->m_pPlayer = NULL;
+
+	// AJ: 01-18-2025
+	if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_crowbar")))
+	SET_MODEL( ENT(pev), "models/w_crowbar.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_9mmhandgun")))
+	SET_MODEL( ENT(pev), "models/w_9mmhandgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_357")))
+	SET_MODEL( ENT(pev), "models/w_357.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_shotgun")))
+	SET_MODEL( ENT(pev), "models/w_shotgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_9mmAR")))
+	SET_MODEL( ENT(pev), "models/w_9mmar.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_crossbow")))
+	SET_MODEL( ENT(pev), "models/w_crossbow.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_rpg")))
+	SET_MODEL( ENT(pev), "models/w_rpg.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_gauss")))
+	SET_MODEL( ENT(pev), "models/w_gauss.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_hornetgun")))
+	SET_MODEL( ENT(pev), "models/w_hgun.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_egon")))
+	SET_MODEL( ENT(pev), "models/w_egon.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_snark")))
+	SET_MODEL( ENT(pev), "models/w_squeak.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_m4a1")))
+	SET_MODEL( ENT(pev), "models/w_m4a1.mdl");
+		else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_ak47")))
+	SET_MODEL( ENT(pev), "models/w_ak47.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_tripmine")))
+	{
+	pev->body = 3;
+	pev->sequence = 8;
+	pev->absmin = pev->origin + Vector(-16, -16, -5);
+	pev->absmax = pev->origin + Vector(16, 16, 28); 
+	SET_MODEL( ENT(pev), "models/v_tripmine.mdl");
+	}
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_handgrenade")))
+	SET_MODEL( ENT(pev), "models/w_grenade.mdl");
+	else if ((!strcmp((char *)STRING( pWeapon->pev->classname ), "weapon_satchel")))
+	SET_MODEL( ENT(pev), "models/w_satchel.mdl");
 
 	//ALERT ( at_console, "packed %s\n", STRING(pWeapon->pev->classname) );
 

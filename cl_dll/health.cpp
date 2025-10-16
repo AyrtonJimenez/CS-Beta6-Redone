@@ -214,20 +214,57 @@ int CHudHealth::Draw(float flTime)
 		int CrossWidth = gHUD.GetSpriteRect(m_HUD_cross).right - gHUD.GetSpriteRect(m_HUD_cross).left;
 
 		y = ScreenHeight - gHUD.m_iFontHeight - gHUD.m_iFontHeight / 2;
-		x = CrossWidth /2;
+		// x = CrossWidth /2;
 
-		SPR_Set(gHUD.GetSprite(m_HUD_cross), r, g, b);
-		SPR_DrawAdditive(0, x, y, &gHUD.GetSpriteRect(m_HUD_cross));
+		// SPR_Set(gHUD.GetSprite(m_HUD_cross), r, g, b);
+		// SPR_DrawAdditive(0, x, y, &gHUD.GetSpriteRect(m_HUD_cross));
 
-		x = CrossWidth + HealthWidth / 2;
+		// x = CrossWidth + HealthWidth / 2;
 
-		x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iHealth, r, g, b);
+		// x = gHUD.DrawHudNumber(x, y, DHN_3DIGITS | DHN_DRAWZERO, m_iHealth, r, g, b);
 
 		x += HealthWidth/2;
 
 		int iHeight = gHUD.m_iFontHeight;
 		int iWidth = HealthWidth/10;
 		FillRGBA(x, y, iWidth, iHeight, 255, 160, 0, a);
+
+
+
+
+		iHeight = (ScreenWidth/128);
+		iWidth = 1;
+		x = (ScreenWidth / 2);
+		y= (ScreenHeight /2) -(ScreenHeight /106)-((ScreenHeight/(ScreenHeight/2)));
+		FillRGBA(x, y, iWidth, iHeight, 0, 255, 0, 128);
+
+		iHeight = (ScreenWidth/128);
+		iWidth = 1;
+		x = (ScreenWidth / 2);
+		y= (ScreenHeight /2) +(ScreenHeight /240);
+		FillRGBA(x, y, iWidth, iHeight, 0, 255, 0, 128);
+
+		iHeight = 1;
+		iWidth = (ScreenHeight /96);
+
+		if( ScreenWidth> 640)
+		{
+		x = (ScreenWidth / 2)+(ScreenWidth /240)-((ScreenWidth/(ScreenWidth/2))-1) ;
+		}
+		else
+		{
+		x = (ScreenWidth / 2)+(ScreenWidth /240) ;
+		}
+
+		y= (ScreenHeight /2) ;
+		FillRGBA(x, y, iWidth, iHeight, 0, 255, 0, 128);
+
+
+		iHeight = 1;
+		iWidth = (ScreenHeight /96);
+		x = (ScreenWidth / 2)-(ScreenWidth /106);
+		y= (ScreenHeight /2) ;
+		FillRGBA(x, y, iWidth, iHeight, 0, 255, 0, 128);
 	}
 
 	DrawDamage(flTime);

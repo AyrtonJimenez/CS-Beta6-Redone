@@ -39,7 +39,7 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir ".\Releasemp"
+# PROP Output_Dir "..\Builds"
 # PROP Intermediate_Dir ".\Releasemp"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
@@ -57,9 +57,9 @@ LINK32=link.exe
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /map /debug /machine:I386 /def:".\mp.def"
 # SUBTRACT LINK32 /profile
 # Begin Custom Build - Copying to \half-life\mp\dlls
-TargetPath=.\Releasemp\mp.dll
+TargetPath=\Github\CS-Beta6-Redone\Builds\mp.dll
 TargetName=mp
-InputPath=.\Releasemp\mp.dll
+InputPath=\Github\CS-Beta6-Redone\Builds\mp.dll
 SOURCE="$(InputPath)"
 
 "$(TargetName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -76,8 +76,9 @@ SOURCE="$(InputPath)"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir ".\debugmp"
+# PROP Output_Dir "..\Builds\1016\testmod\dlls"
 # PROP Intermediate_Dir ".\debugmp"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\engine" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "VALVE_DLL" /FR /YX /FD /c
@@ -93,13 +94,13 @@ LINK32=link.exe
 # ADD LINK32 user32.lib advapi32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /def:".\mp.def" /implib:".\Debug\mp.lib"
 # SUBTRACT LINK32 /profile
 # Begin Custom Build - Copying to \half-life\mp\dlls
-TargetPath=.\debugmp\mp.dll
+TargetPath=\Github\CS-Beta6-Redone\Builds\1016\testmod\dlls\mp.dll
 TargetName=mp
-InputPath=.\debugmp\mp.dll
+InputPath=\Github\CS-Beta6-Redone\Builds\1016\testmod\dlls\mp.dll
 SOURCE="$(InputPath)"
 
 "$(TargetName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetPath) \half-life\mp\dlls
+	copy $(TargetPath) F:\Github\CS-Beta6-Redone\Builds\Half-Life\testmod\debug
 
 # End Custom Build
 
@@ -159,6 +160,10 @@ BuildCmds= \
 # Begin Source File
 
 SOURCE=.\airtank.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ak47.cpp
 # End Source File
 # Begin Source File
 
@@ -475,6 +480,10 @@ SOURCE=.\items.h
 # Begin Source File
 
 SOURCE=.\maprules.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\math.h
 # End Source File
 # Begin Source File
 

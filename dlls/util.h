@@ -86,9 +86,11 @@ typedef int BOOL;
 // This is the glue that hooks .MAP entity class names to our CPP classes
 // The _declspec forces them to be exported by name so we can do a lookup with GetProcAddress()
 // The function is used to intialize / allocate the object for the entity
+/* LINUX COMPILE */
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
-	extern "C" _declspec( dllexport ) void mapClassName( entvars_t *pev ); \
-	void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
+        extern "C" EXPORT void mapClassName( entvars_t *pev ); \
+        void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
+/* END LINUX COMPILE */
 
 
 //
@@ -522,3 +524,15 @@ void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname);
 	EMIT_SOUND_DYN ( ENT(pev), chan , array [ RANDOM_LONG(0,ARRAYSIZE( array )-1) ], 1.0, ATTN_NORM, 0, RANDOM_LONG(95,105) ); 
 
 #define RANDOM_SOUND_ARRAY( array ) (array) [ RANDOM_LONG(0,ARRAYSIZE( (array) )-1) ]
+
+
+// float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
+float UTIL_WeaponTimeBase();
+unsigned int U_Random();
+void U_Srand(unsigned int seed);
+int UTIL_SharedRandomLong(unsigned int seed, int low, int high);
+float UTIL_SharedRandomFloat(unsigned int seed, float low, float high);
+char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
+
+
+

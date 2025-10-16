@@ -332,4 +332,14 @@ class CItemLongJump : public CItem
 	}
 };
 
+
 LINK_ENTITY_TO_CLASS( item_longjump, CItemLongJump );
+
+// class CObject : public CItem
+// {
+// 	void Spawn(void)
+// 	{
+// 		Precache();
+// 		SET_MODEL(ENT(pev), "models/player/arab/arab.mdl");
+// 	}
+// };

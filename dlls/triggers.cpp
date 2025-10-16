@@ -1737,6 +1737,55 @@ void NextLevel( void )
 }
 
 
+class CBuyZone : public CBaseTrigger
+{
+  public:
+    void KeyValue(KeyValueData *pkvd);
+    void Spawn(void);
+    void Precache(void);
+	void BuyTouch(CBaseEntity *pOther);
+};
+LINK_ENTITY_TO_CLASS(func_buyzone, CBuyZone);
+
+void CBuyZone::KeyValue(KeyValueData *pkvd) {
+  CBaseTrigger::KeyValue(pkvd);
+}
+
+void CBuyZone::Precache(void){
+  pev->solid = SOLID_NOT;
+  pev->skin = CONTENTS_BUYZONE;
+
+  if(CVAR_GET_FLOAT("showtriggers") == 0) {
+    pev->rendermode = kRenderTransTexture;
+    pev->renderamt = 0;
+  }
+  pev->effects &= ~EF_NODRAW;
+}
+
+void CBuyZone::Spawn(void) {
+  Precache();
+
+  SET_MODEL(ENT(pev), STRING(pev->model));
+  pev->movetype = MOVETYPE_PUSH;
+}
+
+void CBuyZone::BuyTouch(CBaseEntity *pOther) {
+	CBasePlayer *pPlayer;
+
+	if(pOther->IsPlayer()) {
+		pPlayer = (CBasePlayer *) pOther;
+
+		pPlayer->m_bInBuy = !pPlayer->m_bInBuy;
+		
+		if(!pPlayer->m_bInBuy)
+			ClientPrint(pOther->pev, HUD_PRINTCENTER, "The Player is now in the buy zone");
+		else
+			ClientPrint(pOther->pev, HUD_PRINTCENTER, "The Player has now left the buy zone");
+	}
+
+	return;
+}
+
 // ============================== LADDER =======================================
 
 class CLadder : public CBaseTrigger
@@ -1765,8 +1814,7 @@ void CLadder :: Precache( void )
 	pev->skin = CONTENTS_LADDER;
 	if ( CVAR_GET_FLOAT("showtriggers") == 0 )
 	{
-		pev->rendermode = kRenderTransTexture;
-		pev->renderamt = 0;
+		pev->rendermode = kRenderTransTexture; pev->renderamt = 0;
 	}
 	pev->effects &= ~EF_NODRAW;
 }

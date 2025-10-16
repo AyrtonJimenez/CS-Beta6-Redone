@@ -32,6 +32,9 @@
 #pragma warning(disable : 4514)		// unreferenced inline function removed
 #pragma warning(disable : 4100)		// unreferenced formal parameter
 
+/* LINUX COMPILE */
+#ifdef _WIN32
+
 // Prevent tons of unused windows definitions
 #define WIN32_LEAN_AND_MEAN
 #define NOWINRES
@@ -44,6 +47,31 @@
 #include "STDIO.H"
 #include "STDLIB.H"
 #include "MATH.H"
+
+#else
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ULONG ulong
+#define FALSE 0
+#define TRUE  1
+
+#ifndef max
+#define max(a,b)    (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)    (((a) <(b)) ? (a) : (b))
+#endif
+
+#define itoa(a,b,c) sprintf(b, "%d", a)
+
+typedef unsigned char BYTE;
+#endif
 
 // Header file containing definition of globalvars_t and entvars_t
 typedef int	func_t;					//
