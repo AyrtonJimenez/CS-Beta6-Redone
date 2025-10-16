@@ -98,8 +98,7 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     // Apply upward (pitch) recoil
     m_pPlayer->pev->punchangle.x -= flFront;
 
-	    // ✅ Proper vertical clamping: recoil goes upward (negative x), 
-    // so clamp between -up_max and +up_max correctly
+
     if (m_pPlayer->pev->punchangle.x < -up_max)
         m_pPlayer->pev->punchangle.x = -up_max;
     else if (m_pPlayer->pev->punchangle.x > up_max)
@@ -109,7 +108,6 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     {
         m_pPlayer->pev->punchangle.y += flSide;
 
-        // ✅ Clamp horizontal recoil properly both directions
         if (m_pPlayer->pev->punchangle.y > lateral_max)
             m_pPlayer->pev->punchangle.y = lateral_max;
         else if (m_pPlayer->pev->punchangle.y < -lateral_max)
