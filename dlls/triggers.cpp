@@ -1770,7 +1770,6 @@ void CBuyZone::Spawn(void) {
 }
 
 void CBuyZone::BuyTouch(CBaseEntity *pOther) {
-<<<<<<< HEAD
 	CBasePlayer *pPlayer;
 
 	if(pOther->IsPlayer()) {
@@ -1779,12 +1778,6 @@ void CBuyZone::BuyTouch(CBaseEntity *pOther) {
 		pPlayer->m_bInBuy = !pPlayer->m_bInBuy;
 		
 		if(!pPlayer->m_bInBuy)
-=======
-	if(pOther->IsPlayer()) {
-		pOther->m_bInBuy = !pOther->m_bInBuy;
-
-		if(!pOther->m_bInBuy)
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 			ClientPrint(pOther->pev, HUD_PRINTCENTER, "The Player is now in the buy zone");
 		else
 			ClientPrint(pOther->pev, HUD_PRINTCENTER, "The Player has now left the buy zone");

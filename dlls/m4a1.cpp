@@ -24,11 +24,7 @@ class CM4A1: public CBasePlayerWeapon
 	public:
 		void Spawn (void);
 		void Precache (void);
-<<<<<<< HEAD
 		int iItemSlot(void) { return WEAPON_PRIMARY; }
-=======
-		int iItemSlot( void ) { return WEAPON_PRIMARY; }
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer(CBasePlayer *pPlayer);
 		void Reload(void);
@@ -37,7 +33,6 @@ class CM4A1: public CBasePlayerWeapon
 		void PrimaryAttack(void);
 		void SecondaryAttack(void);
 		// void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
-<<<<<<< HEAD
 		void M4A1Fire(float flSpread, float flCycleTime);
 		float GetMaxSpeed(void);
 
@@ -45,17 +40,6 @@ class CM4A1: public CBasePlayerWeapon
 		void Holster(void);
 		float flSpread;
 		bool m_fInZoom;
-=======
-		// void M4A1Fire(int timeSinceLastAttack);
-		void M4A1Fire(void);
-		float GetMaxSpeed(void);
-
-
-		BOOL Deploy( void );
-		void Holster( void );
-		int m_fInZoom;
-
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 };
 
 LINK_ENTITY_TO_CLASS (weapon_m4a1, CM4A1);
@@ -83,7 +67,6 @@ void CM4A1::Precache(void)
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
-<<<<<<< HEAD
 	PRECACHE_SOUND("sounds/weapons/m4a1-1.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1-2.wav");
 	PRECACHE_SOUND("sounds/dryfire_rifle.wav");
@@ -91,17 +74,6 @@ void CM4A1::Precache(void)
 	PRECACHE_SOUND("sounds/weapons/m4a1_deploy.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1_clipin.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1_clipout.wav");
-=======
-	PRECACHE_SOUND("weapons/m4a1-1.wav");
-	PRECACHE_SOUND("weapons/m4a1-2.wav");
-	PRECACHE_SOUND("dryfire_rifle.wav");
-	PRECACHE_SOUND("weapons/ammo_pick.wav");
-	PRECACHE_SOUND("weapons/m4a1_deploy.wav");
-	PRECACHE_SOUND("weapons/m4a1_clipin.wav");
-	PRECACHE_SOUND("weapons/m4a1_clipout.wav");
-
-	
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 int CM4A1::GetItemInfo(ItemInfo *p)
@@ -133,7 +105,6 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 	{
 		if(pPlayer->hasPrimary) {
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "The Player already has a Primary Weapon");
-<<<<<<< HEAD
 			return false;
 		}
 		pPlayer->hasPrimary = true;
@@ -143,18 +114,6 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 		MESSAGE_END();
 
 		return true;
-=======
-			
-			return FALSE;
-		}
-		pPlayer->hasPrimary = true;
-		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "hasPrimary == True");
-		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
-			WRITE_BYTE( m_iId );
-		MESSAGE_END();
-
-		return TRUE;
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	}
 	return false;
 }
@@ -162,10 +121,7 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CM4A1::Deploy ()
 {
-<<<<<<< HEAD
 	m_iShotsFired = 0;
-=======
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	return DefaultDeploy("models/v_m4a1_r.mdl", "models/p_m4a1.mdl", DRAW, "m4a1");
 }
 
@@ -174,28 +130,10 @@ void CM4A1::Holster()
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5; //Same for all
 	SendWeaponAnim(IDLE1);
 }
-<<<<<<< HEAD
 
 void CM4A1::PrimaryAttack(void)
 {
 	if(m_pPlayer->pev->waterlevel == 3)
-=======
-
-// void CM4A1::PrimaryAttack(void)
-// {
-// 	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
-// 		M4A1Fire(0.035 + (0.4) * m_flAccuracy, 0.0875, FALSE);
-// 	else if (m_pPlayer->pev->velocity.Length2D() > 140)
-// 		M4A1Fire(0.035 + (0.07) * m_flAccuracy, 0.0875, FALSE);
-// 	else
-// 		M4A1Fire((0.025) * m_flAccuracy, 0.0875, FALSE);
-
-// }
-
-void CM4A1::PrimaryAttack(void)
-{
-		if(m_pPlayer->pev->waterlevel == 3)
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	{
 		PlayEmptySound( );
 		m_flNextPrimaryAttack = gpGlobals->time + 0.15;
@@ -204,13 +142,8 @@ void CM4A1::PrimaryAttack(void)
 
 	if(m_iClip <= 0)
 	{
-<<<<<<< HEAD
 		if(m_fFireOnEmpty)
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/dryfire_rifle.wav", 0.8, ATTN_NORM);
-=======
-		if(!m_fFireOnEmpty)
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "sound/weapons/dryfire_rifle.wav", 0.8, ATTN_NORM);
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		else
 		{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/m4a1-2.wav", 0.8, ATTN_NORM);
@@ -229,20 +162,14 @@ void CM4A1::PrimaryAttack(void)
 
 	if(m_fInZoom)
 	{
-<<<<<<< HEAD
 		flSpread = 0.875f;
-=======
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.165;
 		if (m_flNextPrimaryAttack < gpGlobals->time)
 			m_flNextPrimaryAttack = gpGlobals->time + 0.165;
 	}
 	else
 	{
-<<<<<<< HEAD
 		flSpread = 0.165f;
-=======
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.115;
 		if (m_flNextPrimaryAttack < gpGlobals->time)
 			m_flNextPrimaryAttack = gpGlobals->time + 0.115;
@@ -251,7 +178,6 @@ void CM4A1::PrimaryAttack(void)
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-<<<<<<< HEAD
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 
 	float cycTime;
@@ -288,13 +214,6 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime) {
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + flCycleTime;
-=======
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-	}
-
-
-	M4A1Fire();
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 void CM4A1::M4A1Fire() {

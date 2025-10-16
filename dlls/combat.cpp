@@ -1552,7 +1552,6 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
-<<<<<<< HEAD
 void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) {
 	int iOriginalPenetration = iPenetration;
 	int iPenetrationPower;
@@ -1828,8 +1827,6 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 	// return Vector(x * flSpread, y * flSpread, 0);
 }
 
-=======
->>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 
 void CBaseEntity :: TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType )
 {
