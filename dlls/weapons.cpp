@@ -81,6 +81,7 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
 {
 	float flFront, flSide;
 
+<<<<<<< HEAD
 	if (m_iShotsFired == 1)
     {
         flFront = up_base;
@@ -149,6 +150,44 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     // Randomly change direction after a certain number of shots
     if (!RANDOM_LONG(0, direction_change))
         m_iDirection = !m_iDirection;
+=======
+		if (m_iShotsFired == 1)
+	{
+		flFront = up_base;
+		flSide = lateral_base;
+	}
+	else
+	{
+		flFront = m_iShotsFired * up_modifier + up_base;
+		flSide = m_iShotsFired * lateral_modifier + lateral_base;
+	}
+
+	m_pPlayer->pev->punchangle.x -= flFront;
+
+	if (m_pPlayer->pev->punchangle.x < -up_max)
+		m_pPlayer->pev->punchangle.x = -up_max;
+
+	if (m_iDirection == 1)
+	{
+		m_pPlayer->pev->punchangle.y += flSide;
+
+		if (m_pPlayer->pev->punchangle.y > lateral_max)
+			m_pPlayer->pev->punchangle.y = lateral_max;
+	}
+	else
+	{
+		m_pPlayer->pev->punchangle.y -= flSide;
+
+		if (m_pPlayer->pev->punchangle.y < -lateral_max)
+			m_pPlayer->pev->punchangle.y = -lateral_max;
+	}
+
+	if (!RANDOM_LONG(0, direction_change))
+		m_iDirection = !m_iDirection;
+
+  ALERT(at_console, "Punch X: %3f Punch Y: %3f \n", m_pPlayer->pev->punchangle.x , m_pPlayer->pev->punchangle.y);
+    
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)

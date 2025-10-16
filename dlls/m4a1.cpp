@@ -24,7 +24,11 @@ class CM4A1: public CBasePlayerWeapon
 	public:
 		void Spawn (void);
 		void Precache (void);
+<<<<<<< HEAD
 		int iItemSlot(void) { return WEAPON_PRIMARY; }
+=======
+		int iItemSlot( void ) { return WEAPON_PRIMARY; }
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		int GetItemInfo(ItemInfo *p);
 		int AddToPlayer(CBasePlayer *pPlayer);
 		void Reload(void);
@@ -33,6 +37,7 @@ class CM4A1: public CBasePlayerWeapon
 		void PrimaryAttack(void);
 		void SecondaryAttack(void);
 		// void M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim);
+<<<<<<< HEAD
 		void M4A1Fire(float flSpread, float flCycleTime);
 		float GetMaxSpeed(void);
 
@@ -40,6 +45,17 @@ class CM4A1: public CBasePlayerWeapon
 		void Holster(void);
 		float flSpread;
 		bool m_fInZoom;
+=======
+		// void M4A1Fire(int timeSinceLastAttack);
+		void M4A1Fire(void);
+		float GetMaxSpeed(void);
+
+
+		BOOL Deploy( void );
+		void Holster( void );
+		int m_fInZoom;
+
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 };
 
 LINK_ENTITY_TO_CLASS (weapon_m4a1, CM4A1);
@@ -67,6 +83,7 @@ void CM4A1::Precache(void)
 	PRECACHE_MODEL("models/w_9mmclip.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");
 
+<<<<<<< HEAD
 	PRECACHE_SOUND("sounds/weapons/m4a1-1.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1-2.wav");
 	PRECACHE_SOUND("sounds/dryfire_rifle.wav");
@@ -74,6 +91,17 @@ void CM4A1::Precache(void)
 	PRECACHE_SOUND("sounds/weapons/m4a1_deploy.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1_clipin.wav");
 	PRECACHE_SOUND("sounds/weapons/m4a1_clipout.wav");
+=======
+	PRECACHE_SOUND("weapons/m4a1-1.wav");
+	PRECACHE_SOUND("weapons/m4a1-2.wav");
+	PRECACHE_SOUND("dryfire_rifle.wav");
+	PRECACHE_SOUND("weapons/ammo_pick.wav");
+	PRECACHE_SOUND("weapons/m4a1_deploy.wav");
+	PRECACHE_SOUND("weapons/m4a1_clipin.wav");
+	PRECACHE_SOUND("weapons/m4a1_clipout.wav");
+
+	
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 int CM4A1::GetItemInfo(ItemInfo *p)
@@ -105,6 +133,7 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 	{
 		if(pPlayer->hasPrimary) {
 			ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "The Player already has a Primary Weapon");
+<<<<<<< HEAD
 			return false;
 		}
 		pPlayer->hasPrimary = true;
@@ -114,6 +143,18 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 		MESSAGE_END();
 
 		return true;
+=======
+			
+			return FALSE;
+		}
+		pPlayer->hasPrimary = true;
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "hasPrimary == True");
+		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
+			WRITE_BYTE( m_iId );
+		MESSAGE_END();
+
+		return TRUE;
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	}
 	return false;
 }
@@ -121,7 +162,10 @@ int CM4A1::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CM4A1::Deploy ()
 {
+<<<<<<< HEAD
 	m_iShotsFired = 0;
+=======
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	return DefaultDeploy("models/v_m4a1_r.mdl", "models/p_m4a1.mdl", DRAW, "m4a1");
 }
 
@@ -130,10 +174,28 @@ void CM4A1::Holster()
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5; //Same for all
 	SendWeaponAnim(IDLE1);
 }
+<<<<<<< HEAD
 
 void CM4A1::PrimaryAttack(void)
 {
 	if(m_pPlayer->pev->waterlevel == 3)
+=======
+
+// void CM4A1::PrimaryAttack(void)
+// {
+// 	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+// 		M4A1Fire(0.035 + (0.4) * m_flAccuracy, 0.0875, FALSE);
+// 	else if (m_pPlayer->pev->velocity.Length2D() > 140)
+// 		M4A1Fire(0.035 + (0.07) * m_flAccuracy, 0.0875, FALSE);
+// 	else
+// 		M4A1Fire((0.025) * m_flAccuracy, 0.0875, FALSE);
+
+// }
+
+void CM4A1::PrimaryAttack(void)
+{
+		if(m_pPlayer->pev->waterlevel == 3)
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 	{
 		PlayEmptySound( );
 		m_flNextPrimaryAttack = gpGlobals->time + 0.15;
@@ -142,8 +204,13 @@ void CM4A1::PrimaryAttack(void)
 
 	if(m_iClip <= 0)
 	{
+<<<<<<< HEAD
 		if(m_fFireOnEmpty)
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/dryfire_rifle.wav", 0.8, ATTN_NORM);
+=======
+		if(!m_fFireOnEmpty)
+			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "sound/weapons/dryfire_rifle.wav", 0.8, ATTN_NORM);
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		else
 		{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/m4a1-2.wav", 0.8, ATTN_NORM);
@@ -162,21 +229,29 @@ void CM4A1::PrimaryAttack(void)
 
 	if(m_fInZoom)
 	{
+<<<<<<< HEAD
 		flSpread = 0.875f;
+=======
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.165;
 		if (m_flNextPrimaryAttack < gpGlobals->time)
 			m_flNextPrimaryAttack = gpGlobals->time + 0.165;
 	}
 	else
 	{
+<<<<<<< HEAD
 		flSpread = 0.165f;
+=======
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 		m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.115;
 		if (m_flNextPrimaryAttack < gpGlobals->time)
 			m_flNextPrimaryAttack = gpGlobals->time + 0.115;
 	}
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	{
 		// HEV suit - indicate out of ammo condition
+<<<<<<< HEAD
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 
 	float cycTime;
@@ -213,7 +288,141 @@ void CM4A1::M4A1Fire(float flSpread, float flCycleTime) {
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + flCycleTime;
+=======
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
+
+
+	M4A1Fire();
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
+
+void CM4A1::M4A1Fire() {
+	if (m_pPlayer->pev->speed <= 0.0f)
+	{
+		if (m_fInZoom) // Zoomed in
+		{ 
+			if (FL_DUCKING) // Crouched
+					KickBack(0.55f, 0.3f, 0.2f, 0.0125f, 4.5f, 1.5f, 10);
+			else
+				KickBack(0.6f, 0.35f, 0.25f, 0.15f, 4.5f, 1.5f, 10);
+		}
+		else
+			KickBack(1.2f, 0.45f, 0.23f, 0.15f, 5.5f, 3.5f, 6);
+		}
+	else
+	{
+		// KickBack(0.65, 0.35, 0.25, 0.015, 3.5, 2.25, 7);
+		KickBack(1.0f, 0.4f, 0.23f, 0.15f, 5.0f, 3.0f, 7);
+	}
+	
+	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecAiming = gpGlobals->v_forward;
+	m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_556, 0);
+}
+
+
+// void CM4A1::M4A1Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
+// {
+// 	m_bDelayFire = true;
+// 	m_iShotsFired++;
+// 	m_flAccuracy = ((float)(m_iShotsFired * m_iShotsFired * m_iShotsFired) / 220) + 0.3;
+
+// 	if (m_flAccuracy > 1)
+// 		m_flAccuracy = 1;
+
+// 	if (m_iClip <= 0)
+// 	{
+// 		if (m_fFireOnEmpty)
+// 		{
+// 			PlayEmptySound();
+// 			m_flNextPrimaryAttack = gpGlobals->time + 0.2;
+// 		}
+
+// 		return;
+// 	}
+
+// 	m_iClip--;
+// 	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+// 	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
+
+// 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+// 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
+
+// 	Vector vecSrc = m_pPlayer->GetGunPosition();
+// 	Vector vecDir;
+
+// 	vecDir = m_pPlayer->FireBullets(vecSrc, gpGlobals->v_forward, flSpread, 8192, 2, BULLET_PLAYER_556, 33, 0.95, m_pPlayer->pev, FALSE, m_pPlayer->random_seed);
+
+// 	int flags;
+// 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->time + flCycleTime;
+
+// 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+// 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+
+// 	m_flTimeWeaponIdle = gpGlobals->time + 1.5;
+
+// 	if (m_pPlayer->pev->velocity.Length2D() > 0)
+// 		KickBack(1.0, 0.45, 0.28, 0.045, 3.75, 3.0, 7);
+// 	else if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+// 		KickBack(1.2, 0.5, 0.23, 0.15, 5.5, 3.5, 6);
+// 	else if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING))
+// 		KickBack(0.6, 0.3, 0.2, 0.0125, 3.25, 2.0, 7);
+// 	else
+// 		KickBack(0.65, 0.35, 0.25, 0.015, 3.5, 2.25, 7);
+// }
+
+// void CM4A1::M4A1Fire(int timeSinceLastAttack)
+// {
+// 	float multiplier = 1.0;
+// 	int consecutiveShots = 0;
+
+// 	if(!m_fInZoom)
+// 	{
+// 		if(timeSinceLastAttack <= 0.115 && consecutiveShots < 15)
+// 		{
+// 			m_pPlayer->pev->punchangle.x += multiplier;
+// 			m_pPlayer->pev->punchangle.y -= 0.725;
+// 			multiplier *= 2.5;
+// 			consecutiveShots += 1;
+// 		}
+// 		if(timeSinceLastAttack <= 0.115 && consecutiveShots > 15)
+// 		{
+// 			m_pPlayer->pev->punchangle.x = 7.25;
+// 			m_pPlayer->pev->punchangle.y += RANDOM_FLOAT(0, 2);
+// 			consecutiveShots += 1;
+// 		}
+// 		else
+// 		{
+// 			m_pPlayer->pev->punchangle.x -= 1.5;
+// 			m_pPlayer->pev->punchangle.y -= 0.725;
+// 		}
+// 	}
+// 	else
+// 	{
+// 		if(timeSinceLastAttack <= 0.12 && consecutiveShots < 5)
+// 		{
+// 			m_pPlayer->pev->punchangle.x += multiplier;
+// 			m_pPlayer->pev->punchangle.y -= 0.725;
+// 			multiplier *= 1.75;
+// 			consecutiveShots += 1;
+// 		}
+// 		if(timeSinceLastAttack <= 0.12 && consecutiveShots > 5)
+// 		{
+// 			m_pPlayer->pev->punchangle.x += multiplier;
+// 			m_pPlayer->pev->punchangle.y += 0.725;
+// 			multiplier *= 3.5;
+// 			consecutiveShots += 1;
+// 		}
+// 		else
+// 		{
+// 			m_pPlayer->pev->punchangle.x -= 1.5;
+// 			m_pPlayer->pev->punchangle.y -= 0.725;
+// 		}
+// 	}
+// }
 
 void CM4A1::SecondaryAttack(void)
 {
@@ -227,8 +436,21 @@ void CM4A1::SecondaryAttack(void)
 		m_pPlayer->m_iFOV = 45;
 		m_fInZoom = true;
 	}
+<<<<<<< HEAD
 	pev->nextthink = gpGlobals->time + 0.5;
 	m_flNextSecondaryAttack = gpGlobals->time + 0.5;
+=======
+	pev->nextthink = gpGlobals->time + 0.1;
+	m_flNextSecondaryAttack = gpGlobals->time + 1.0;
+}
+
+float CM4A1::GetMaxSpeed(void) 
+{
+	if (!m_fInZoom)
+		return 230;
+	else
+		return 200;
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
 }
 
 float CM4A1::GetMaxSpeed(void) 

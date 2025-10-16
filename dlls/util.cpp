@@ -2372,6 +2372,7 @@ int	CRestore::BufferCheckZString( const char *string )
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 
 // float UTIL_SharedRandomFloat(unsigned int seed, float low, float high)
@@ -2502,3 +2503,5 @@ char UTIL_TextureHit(TraceResult *ptr, Vector vecSrc, Vector vecEnd)
 
 	return chTextureType;
 }
+=======
+>>>>>>> 7af4a8a21941ddf9b870ed9059cbb423451c3e0c
