@@ -34,6 +34,9 @@
 #include "decals.h"
 #include "gamerules.h"
 
+// Included by Ayrton
+#include <string.h>
+
 // #define DUCKFIX
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
@@ -918,16 +921,16 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 	case PLAYER_ATTACK1:	
 		switch( m_Activity )
 		{
-		case ACT_HOVER:
-		case ACT_SWIM:
-		case ACT_HOP:
-		case ACT_LEAP:
-		case ACT_DIESIMPLE:
-			m_IdealActivity = m_Activity;
-			break;
-		default:
-			m_IdealActivity = ACT_RANGE_ATTACK1;
-			break;
+			case ACT_HOVER:
+			case ACT_SWIM:
+			case ACT_HOP:
+			case ACT_LEAP:
+			case ACT_DIESIMPLE:
+				m_IdealActivity = m_Activity;
+				break;
+			default:
+				m_IdealActivity = ACT_RANGE_ATTACK1;
+				break;
 		}
 		break;
 	case PLAYER_IDLE:
@@ -948,93 +951,85 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 			m_IdealActivity = ACT_WALK;
 		}
 		break;
-	case PLAYER_SHOOT_SILENCED_RIFLE:
-		if (m_flAnimTime > gpGlobals->time)
-			return;
-		m_IdealActivity = ACT_SHOOT_SILENCED_RIFLE;
-		break;
 	}
 
 	switch (m_IdealActivity)
 	{
-	case ACT_HOVER:
-	case ACT_LEAP:
-	case ACT_SWIM:
-	case ACT_HOP:
-	case ACT_DIESIMPLE:
-	default:
-		if ( m_Activity == m_IdealActivity)
+		case ACT_HOVER:
+		case ACT_LEAP:
+		case ACT_SWIM:
+		case ACT_HOP:
+		case ACT_DIESIMPLE:
+		default:
+			if ( m_Activity == m_IdealActivity)
+				return;
+			m_Activity = m_IdealActivity;
+
+			animDesired = LookupActivity( m_Activity );
+			// Already using the desired animation?
+			if (pev->sequence == animDesired)
+				return;
+
+			pev->gaitsequence = 0;
+			pev->sequence		= animDesired;
+			pev->frame			= 0;
+			ResetSequenceInfo( );
 			return;
-		m_Activity = m_IdealActivity;
 
-		animDesired = LookupActivity( m_Activity );
-		// Already using the desired animation?
-		if (pev->sequence == animDesired)
-			return;
-
-		pev->gaitsequence = 0;
-		pev->sequence		= animDesired;
-		pev->frame			= 0;
-		ResetSequenceInfo( );
-		return;
-
-	case ACT_RANGE_ATTACK1:
-		if ( FBitSet( pev->flags, FL_DUCKING ) )	// crouching
-			strcpy( szAnim, "crouch_shoot_" );
-		else
-			strcpy( szAnim, "ref_shoot_" );
-		strcat( szAnim, m_szAnimExtention );
-		animDesired = LookupSequence( szAnim );
-		if (animDesired == -1)
-			animDesired = 0;
-
-		if ( pev->sequence != animDesired || !m_fSequenceLoops )
-		{
-			pev->frame = 0;
-		}
-
-		if (!m_fSequenceLoops)
-		{
-			pev->effects |= EF_NOINTERP;
-		}
-
-		m_Activity = m_IdealActivity;
-
-		pev->sequence		= animDesired;
-		ResetSequenceInfo( );
-		break;
-
-	case ACT_WALK:
-		if (m_Activity != ACT_RANGE_ATTACK1 || m_fSequenceFinished)
-		{
+		case ACT_RANGE_ATTACK1:
 			if ( FBitSet( pev->flags, FL_DUCKING ) )	// crouching
-				strcpy( szAnim, "crouch_aim_" );
+				strcpy( szAnim, "crouch_shoot_" );
 			else
-				strcpy( szAnim, "ref_aim_" );
+				strcpy( szAnim, "ref_shoot_" );
+
 			strcat( szAnim, m_szAnimExtention );
+			ALERT(at_console, "The current animation is %s \n", szAnim);
+
 			animDesired = LookupSequence( szAnim );
 			if (animDesired == -1)
 				animDesired = 0;
-			m_Activity = ACT_WALK;
-		}
-		else
-		{
-			animDesired = pev->sequence;
-		}
-		break;
-	case ACT_SHOOT_SILENCED_RIFLE:
-		animDesired = LookupSequence ("ref_shoot_sileneced_rifle");
 
-		m_flAnimTime = gpGlobals->time + 0.1;// should always be this 
-		m_flFlinchTime = gpGlobals->time + 0.375; //time in secs of how long your anim is
+			if ( pev->sequence != animDesired || !m_fSequenceLoops )
+			{
+				pev->frame = 0;
+			}
 
-		pev->gaitsequence = 0;
-		pev->sequence = animDesired;
-		pev->frame = 0;
-		ResetSequenceInfo();
-		return;
-	break;
+			if (!m_fSequenceLoops)
+			{
+				pev->effects |= EF_NOINTERP;
+			}
+
+			m_Activity = m_IdealActivity;
+
+			pev->sequence		= animDesired;
+			ResetSequenceInfo( );
+			break;
+
+			//	DONE
+			// TODO: Put code here so that the proper walking animation plays
+		case ACT_WALK:
+			if (m_Activity != ACT_RANGE_ATTACK1 || m_fSequenceFinished)
+			{
+				if ( FBitSet( pev->flags, FL_DUCKING ) )	// crouching
+					strcpy( szAnim, "crouch_aim_" );
+				else
+					strcpy( szAnim, "ref_aim_" );
+				strcat( szAnim, m_szAnimExtention );
+
+				if(strcmp(m_szAnimExtention, "sileneced_rifle"))
+					animDesired = LookupSequence("walk");
+				else {
+					animDesired = LookupSequence( szAnim );
+					if (animDesired == -1)
+						animDesired = 0;
+				}
+				m_Activity = ACT_WALK;
+			}
+			else
+				animDesired = pev->sequence;
+			break;
 	}
+	
 
 	if ( FBitSet( pev->flags, FL_DUCKING ) )
 	{
@@ -1073,7 +1068,6 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 	pev->frame			= 0;
 	ResetSequenceInfo( );
 }
-
 
 /*
 ===========

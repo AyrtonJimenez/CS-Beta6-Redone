@@ -103,6 +103,7 @@ int CGlock::GetItemInfo(ItemInfo *p)
 BOOL CGlock::Deploy( )
 {
 	// pev->body = 1;
+	strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded" );
 }
 

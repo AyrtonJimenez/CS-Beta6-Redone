@@ -93,7 +93,9 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
     }
 
 	    // Optional debug output (from the disassembly)
-    ALERT(at_console,"Kick: UP = %.2f/%.2f  LAT = %.2f/%.2f\n", flFront, up_max, flSide, lateral_max);
+    // ALERT(at_console,"Kick: UP = %.2f/%.2f  LAT = %.2f/%.2f\n", flFront, up_max, flSide, lateral_max);
+
+	// ClientPrint(m_pPlayer->pev, HUD_PRINTCONSOLE, ("Kick: UP = %.2f/%.2f  LAT = %.2f/%.2f\n", flFront, up_max, flSide, lateral_max));
 
     // Apply upward (pitch) recoil
     m_pPlayer->pev->punchangle.x -= flFront;
@@ -149,10 +151,10 @@ void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_mod
         m_iDirection = !m_iDirection;
 }
 
-void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
-{
-
-}
+// void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal)
+// {
+// 	// UTIL_GunshotDecalTrace( pTrace, DamageDecal( pEntity, DMG_BULLET ) );
+// }
 
 
 /*
@@ -1204,11 +1206,11 @@ int CBasePlayerWeapon::ExtractClipAmmo( CBasePlayerWeapon *pWeapon )
 void CBasePlayerWeapon::RetireWeapon( void )
 {
 	// first, no viewmodel at all.
-	m_pPlayer->pev->viewmodel = iStringNull;
-	m_pPlayer->pev->weaponmodel = iStringNull;
+	// m_pPlayer->pev->viewmodel = iStringNull;
+	// m_pPlayer->pev->weaponmodel = iStringNull;
 	//m_pPlayer->pev->viewmodelindex = NULL;
 
-	g_pGameRules->GetNextBestWeapon( m_pPlayer, this );
+	// g_pGameRules->GetNextBestWeapon( m_pPlayer, this );
 }
 
 //*********************************************************

@@ -1552,7 +1552,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	ApplyMultiDamage(pev, pevAttacker);
 }
 
-void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand) {
+Vector CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpread, float flDistance, int iPenetration, int iBulletType, int iDamage) {
 	int iOriginalPenetration = iPenetration;
 	int iPenetrationPower;
 	float flPenetrationDistance;
@@ -1573,6 +1573,8 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 			flPenetrationDistance = 800;
 			iSparksAmount = 15;
 			iCurrentDamage += (-4 + RANDOM_LONG(0, 10));
+							DecalGunshot( &tr, iBulletType );
+
 			break;
 		}
 		// case BULLET_PLAYER_45ACP:
@@ -1646,28 +1648,28 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 		}
 	}
 
-	if (!pevAttacker)
-		pevAttacker = pev;
+	// if (!pevAttacker)
+	// 	pevAttacker = pev;
 
 	gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
 
 	float x, y, z;
 
-	if (IsPlayer())
-	{
-		x = UTIL_SharedRandomFloat(shared_rand, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 1, -0.5, 0.5);
-		y = UTIL_SharedRandomFloat(shared_rand + 2, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 3, -0.5, 0.5);
-	}
-	else
-	{
-		do
-		{
-			x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
-			y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
-			z = x * x + y * y;
-		}
-		while (z > 1);
-	}
+	// if (IsPlayer())
+	// {
+	// 	x = UTIL_SharedRandomFloat(shared_rand, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 1, -0.5, 0.5);
+	// 	y = UTIL_SharedRandomFloat(shared_rand + 2, -0.5, 0.5) + UTIL_SharedRandomFloat(shared_rand + 3, -0.5, 0.5);
+	// }
+	// else
+	// {
+	// 	do
+	// 	{
+	// 		x = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+	// 		y = RANDOM_FLOAT(-0.5, 0.5) + RANDOM_FLOAT(-0.5, 0.5);
+	// 		z = x * x + y * y;
+	// 	}
+	// 	while (z > 1);
+	// }
 
 	Vector vecDir = vecDirShooting + x * flSpread * vecRight + y * flSpread * vecUp;
 	Vector vecEnd = vecSrc + vecDir * flDistance;
@@ -1754,7 +1756,7 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 			pEntity = CBaseEntity::Instance(tr.pHit);
 			iPenetration--;
 			flCurrentDistance = tr.flFraction * flDistance;
-			iCurrentDamage *= pow(flRangeModifier, flCurrentDistance / 500);
+			// iCurrentDamage *= pow(flRangeModifier, flCurrentDistance / 500);
 
 			if (flCurrentDistance > flPenetrationDistance)
 				iPenetration = 0;
@@ -1789,31 +1791,31 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 
 			if ((VARS(tr.pHit)->solid == SOLID_BSP) && (iPenetration != 0))
 			{
-				if (bPistol)
-					DecalGunshot(&tr, iBulletType, false, pev, bHitMetal);
-				else if (RANDOM_LONG(0, 3))
-					DecalGunshot(&tr, iBulletType, true, pev, bHitMetal);
+				// if (bPistol)
+				// 	DecalGunshot(&tr, iBulletType, false, pev, bHitMetal);
+				// else if (RANDOM_LONG(0, 3))
+					// DecalGunshot(&tr, iBulletType, true, pev, bHitMetal);
 
 				vecSrc = tr.vecEndPos + (vecDir * iPenetrationPower);
 				flDistance = (flDistance - flCurrentDistance) * 0.5;
 				vecEnd = vecSrc + (vecDir * flDistance);
 
-				pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
+				// pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
 
 				iCurrentDamage *= flDamageModifier;
 			}
 			else
 			{
-				if (bPistol)
-					DecalGunshot(&tr, iBulletType, false, pev, bHitMetal);
-				else if (RANDOM_LONG(0, 3))
-					DecalGunshot(&tr, iBulletType, true, pev, bHitMetal);
+				// if (bPistol)
+				// 	DecalGunshot(&tr, iBulletType, false, pev, bHitMetal);
+				// else if (RANDOM_LONG(0, 3))
+					// DecalGunshot(&tr, iBulletType, true, pev, bHitMetal);
 
 				vecSrc = tr.vecEndPos + (vecDir * 42);
 				flDistance = (flDistance - flCurrentDistance) * 0.75;
 				vecEnd = vecSrc + (vecDir * flDistance);
 
-				pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
+				// pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
 
 				iCurrentDamage *= 0.75;
 			}
@@ -1821,10 +1823,10 @@ void CBaseEntity::FireBullets3(Vector vecSrc, Vector vecDirShooting, float flSpr
 		else
 			iPenetration = 0;
 
-		ApplyMultiDamage(pev, pevAttacker);
+		// ApplyMultiDamage(pev, pevAttacker);
 	}
 
-	// return Vector(x * flSpread, y * flSpread, 0);
+	return Vector(x * flSpread, y * flSpread, 0);
 }
 
 

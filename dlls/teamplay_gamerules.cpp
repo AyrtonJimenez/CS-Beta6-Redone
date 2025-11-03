@@ -164,10 +164,10 @@ void CHalfLifeTeamplay :: UpdateGameMode( CBasePlayer *pPlayer )
 
 BOOL CHalfLifeTeamplay::CanHavePlayerItem(CBasePlayer *pPlayer,CBasePlayerItem *pItem)
 {
-	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon()==TRUE)
-		return FALSE;
-	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon()==TRUE)
-		return FALSE;
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_PRIMARY && pPlayer->HasPrimaryWeapon())
+		return false;
+	if(pItem->m_tGunType == CBasePlayerItem::WEAPON_SECONDARY && pPlayer->HasSecondaryWeapon())
+		return false;
 
 return CHalfLifeMultiplay::CanHavePlayerItem(pPlayer,pItem);
 }
@@ -204,10 +204,12 @@ const char *CHalfLifeTeamplay::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 		strncpy( pPlayer->m_szTeamName, pTeamName, TEAM_NAME_LENGTH );
 	}
 
+	// WTF is this even doing? Was I high when I wrote this???
 	if (pPlayer->m_szTeamName[0] == 'C')
 		pPlayer->m_iTeam = 1;
 	else if (pPlayer->m_szTeamName[0] == 'T')
 		pPlayer->m_iTeam = 2;
+	// pPlayer->m_szTeamName = "Terrorists";
 
 	return pPlayer->m_szTeamName;
 }
@@ -246,6 +248,7 @@ void CHalfLifeTeamplay::InitHUD( CBasePlayer *pPlayer )
 		CBaseEntity *plr = UTIL_PlayerByIndex( i );
 		if ( plr && IsValidTeam( plr->TeamID() ) )
 		{
+			// This chunk of code is what sends the info to the scoreboard
 			MESSAGE_BEGIN( MSG_ONE, gmsgTeamInfo, NULL, pPlayer->edict() );
 				WRITE_BYTE( plr->entindex() );
 				WRITE_STRING( plr->TeamID() );

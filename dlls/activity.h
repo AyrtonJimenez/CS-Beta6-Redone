@@ -39,6 +39,10 @@ typedef enum {
 	ACT_CROUCHIDLE,			// holding body in crouched position (loops)
 	ACT_STAND,				// the act of standing from a crouched position
 	ACT_USE,
+	
+	ACT_AIM_SILENCED_RIFLE,
+	ACT_SHOOT_SILENCED_RIFLE,
+
 	ACT_SIGNAL1,
 	ACT_SIGNAL2,
 	ACT_SIGNAL3,
@@ -70,11 +74,9 @@ typedef enum {
 	ACT_RUN_HURT,			// limp  (loop)
 	ACT_HOVER,				// Idle while in flight
 	ACT_GLIDE,				// Fly (don't flap)
-	ACT_FLY_LEFT,	
-	ACT_AIM_SILENCED_RIFLE,
-	ACT_SHOOT_SILENCED_RIFLE,		// Turn left in flight
-	// ACT_FLY_RIGHT,			// Turn right in flight
-	// ACT_DETECT_SCENT,		// this means the monster smells a scent carried by the air
+	ACT_FLY_LEFT,			// Turn left in flight
+	ACT_FLY_RIGHT,			// Turn right in flight
+	ACT_DETECT_SCENT,		// this means the monster smells a scent carried by the air
 	ACT_SNIFF,				// this is the act of actually sniffing an item in front of the monster
 	ACT_BITE,				// some large monsters can eat small things in one bite. This plays one time, EAT loops.
 	ACT_THREAT_DISPLAY,		// without attacking, monster demonstrates that it is angry. (Yell, stick out chest, etc )
@@ -97,6 +99,7 @@ typedef enum {
 	ACT_FLINCH_RIGHTARM,
 	ACT_FLINCH_LEFTLEG,
 	ACT_FLINCH_RIGHTLEG
+
 } Activity;
 
 
